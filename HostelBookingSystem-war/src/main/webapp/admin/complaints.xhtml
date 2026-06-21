@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Manage Complaints</ui:define>
+    <ui:define name="content">
+        <h:form id="complaintForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Summary -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <i class="fas fa-exclamation-circle stat-icon red"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{adminComplaintBean.openCount}</span>
+                        <span class="stat-label">Open</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-spinner stat-icon orange"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{adminComplaintBean.inProgressCount}</span>
+                        <span class="stat-label">In Progress</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle stat-icon green"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{adminComplaintBean.resolvedCount}</span>
+                        <span class="stat-label">Resolved</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaints Table -->
+            <p:panel header="All Complaints" style="margin-top:20px">
+                <p:dataTable value="#{adminComplaintBean.complaints}" var="c"
+                             rows="10" paginator="true" filterable="true"
+                             emptyMessage="No complaints found.">
+                    <p:column headerText="ID" style="width:60px">
+                        <h:outputText value="#{c.id}"/>
+                    </p:column>
+                    <p:column headerText="Student" filterBy="#{c.student.fullName}">
+                        <h:outputText value="#{c.student.fullName}"/>
+                    </p:column>
+                    <p:column headerText="Subject" filterBy="#{c.subject}">
+                        <h:outputText value="#{c.subject}"/>
+                    </p:column>
+                    <p:column headerText="Status" sortBy="#{c.status}">
+                        <p:tag value="#{c.status}"
+                               severity="#{c.status == 'RESOLVED' or c.status == 'CLOSED' ? 'success' :
+                                          c.status == 'OPEN' ? 'danger' : 'warning'}"/>
+                    </p:column>
+                    <p:column headerText="Date Submitted">
+                        <h:outputText value="#{c.createdAt}">
+                            <f:convertDateTime pattern="dd-MM-yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <p:commandButton value="Respond" icon="fas fa-reply"
+                                         styleClass="p-button-sm"
+                                         rendered="#{c.status != 'CLOSED'}"
+                                         oncomplete="PF('respondDialog').show()"
+                                         update="complaintForm">
+                            <f:setPropertyActionListener target="#{adminComplaintBean.selectedComplaint}" value="#{c}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Respond Dialog -->
+            <p:dialog widgetVar="respondDialog" header="Respond to Complaint" modal="true"
+                      resizable="false" width="500">
+                <p:panelGrid columns="1" rendered="#{adminComplaintBean.selectedComplaint != null}">
+                    <p><strong>Subject: </strong>#{adminComplaintBean.selectedComplaint.subject}</p>
+                    <p><strong>Description: </strong>#{adminComplaintBean.selectedComplaint.description}</p>
+                </p:panelGrid>
+                <div class="field" style="margin-top:15px">
+                    <p:outputLabel for="resp" value="Your Response *"/>
+                    <p:inputTextarea id="resp" value="#{adminComplaintBean.adminResponse}"
+                                     required="true" rows="4" styleClass="full-width"/>
+                </div>
+                <div class="field">
+                    <p:outputLabel for="status" value="Update Status"/>
+                    <p:selectOneMenu id="status" value="#{adminComplaintBean.newStatus}" style="width:200px">
+                        <f:selectItems value="#{adminComplaintBean.complaintStatuses}" var="s"
+                                       itemLabel="#{s}" itemValue="#{s}"/>
+                    </p:selectOneMenu>
+                </div>
+                <p:commandButton value="Submit Response" icon="fas fa-paper-plane"
+                                 action="#{adminComplaintBean.respond}"
+                                 update="complaintForm"
+                                 oncomplete="PF('respondDialog').hide()"/>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Manage Rooms</ui:define>
+    <ui:define name="content">
+        <h:form id="roomForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Add Room -->
+            <p:panel header="Add New Room" toggleable="true" collapsed="true">
+                <p:panelGrid columns="2" styleClass="form-grid">
+                    <p:outputLabel for="rn" value="Room Number *"/>
+                    <p:inputText id="rn" value="#{adminRoomBean.newRoom.roomNumber}"
+                                 required="true" placeholder="e.g. A103"/>
+
+                    <p:outputLabel for="rt" value="Room Type *"/>
+                    <p:selectOneMenu id="rt" value="#{adminRoomBean.newRoom.type}" required="true">
+                        <f:selectItem itemLabel="-- Select Type --" itemValue=""/>
+                        <f:selectItems value="#{adminRoomBean.roomTypes}" var="t"
+                                       itemLabel="#{t}" itemValue="#{t}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="cap" value="Capacity *"/>
+                    <p:inputText id="cap" value="#{adminRoomBean.newRoom.capacity}" required="true"/>
+
+                    <p:outputLabel for="blk" value="Block"/>
+                    <p:inputText id="blk" value="#{adminRoomBean.newRoom.block}" placeholder="e.g. A"/>
+
+                    <p:outputLabel for="fl" value="Floor *"/>
+                    <p:inputText id="fl" value="#{adminRoomBean.newRoom.floor}" required="true"/>
+
+                    <p:outputLabel for="price" value="Price/Semester (RM) *"/>
+                    <p:inputText id="price" value="#{adminRoomBean.newRoom.pricePerSemester}" required="true"/>
+
+                    <p:outputLabel value="Amenities"/>
+                    <h:panelGroup>
+                        <p:selectBooleanCheckbox value="#{adminRoomBean.newRoom.hasWifi}"/>
+                        <h:outputText value=" WiFi  "/>
+                        <p:selectBooleanCheckbox value="#{adminRoomBean.newRoom.hasAc}"/>
+                        <h:outputText value=" Air Conditioning"/>
+                    </h:panelGroup>
+
+                    <p:outputLabel for="desc" value="Description"/>
+                    <p:inputTextarea id="desc" value="#{adminRoomBean.newRoom.description}" rows="3"/>
+                </p:panelGrid>
+                <p:commandButton value="Add Room" icon="fas fa-plus"
+                                 action="#{adminRoomBean.createRoom}"
+                                 update="roomForm" process="@form"/>
+            </p:panel>
+
+            <!-- Room List -->
+            <p:panel header="All Rooms" style="margin-top:20px">
+                <p:dataTable value="#{adminRoomBean.rooms}" var="room"
+                             rows="10" paginator="true" filterable="true"
+                             emptyMessage="No rooms found.">
+                    <p:column headerText="Room No" sortBy="#{room.roomNumber}" filterBy="#{room.roomNumber}">
+                        <h:outputText value="#{room.roomNumber}"/>
+                    </p:column>
+                    <p:column headerText="Type" sortBy="#{room.type}">
+                        <h:outputText value="#{room.type}"/>
+                    </p:column>
+                    <p:column headerText="Block">
+                        <h:outputText value="#{room.block}"/>
+                    </p:column>
+                    <p:column headerText="Capacity">
+                        <h:outputText value="#{room.capacity}"/>
+                    </p:column>
+                    <p:column headerText="Price/Sem">
+                        <h:outputText value="RM #{room.pricePerSemester}"/>
+                    </p:column>
+                    <p:column headerText="Amenities">
+                        <p:tag value="WiFi" severity="success" rendered="#{room.hasWifi}"/>
+                        <p:tag value="AC" severity="info" rendered="#{room.hasAc}" style="margin-left:3px"/>
+                    </p:column>
+                    <p:column headerText="Status" sortBy="#{room.status}">
+                        <p:tag value="#{room.status}"
+                               severity="#{room.status == 'AVAILABLE' ? 'success' :
+                                          room.status == 'OCCUPIED' ? 'info' :
+                                          room.status == 'MAINTENANCE' ? 'danger' : 'warning'}"/>
+                    </p:column>
+                    <p:column headerText="Actions" style="width:100px">
+                        <p:commandButton icon="fas fa-edit" title="Edit"
+                                         styleClass="p-button-sm p-button-text"
+                                         oncomplete="PF('editDialog').show()"
+                                         update="roomForm">
+                            <f:setPropertyActionListener target="#{adminRoomBean.selectedRoom}" value="#{room}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Edit Room Dialog -->
+            <p:dialog widgetVar="editDialog" header="Edit Room" modal="true" resizable="false" width="500">
+                <p:panelGrid columns="2" styleClass="form-grid" rendered="#{adminRoomBean.selectedRoom != null}">
+                    <p:outputLabel value="Room Number"/>
+                    <p:inputText value="#{adminRoomBean.selectedRoom.roomNumber}"/>
+
+                    <p:outputLabel value="Type"/>
+                    <p:selectOneMenu value="#{adminRoomBean.selectedRoom.type}">
+                        <f:selectItems value="#{adminRoomBean.roomTypes}" var="t"
+                                       itemLabel="#{t}" itemValue="#{t}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Status"/>
+                    <p:selectOneMenu value="#{adminRoomBean.selectedRoom.status}">
+                        <f:selectItems value="#{adminRoomBean.roomStatuses}" var="s"
+                                       itemLabel="#{s}" itemValue="#{s}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Price/Semester"/>
+                    <p:inputText value="#{adminRoomBean.selectedRoom.pricePerSemester}"/>
+
+                    <p:outputLabel value="Description"/>
+                    <p:inputTextarea value="#{adminRoomBean.selectedRoom.description}" rows="3"/>
+                </p:panelGrid>
+                <p:commandButton value="Save Changes" icon="fas fa-save"
+                                 action="#{adminRoomBean.updateRoom}"
+                                 update="roomForm"
+                                 oncomplete="PF('editDialog').hide()"/>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

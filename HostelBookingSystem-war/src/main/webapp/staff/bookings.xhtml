@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Manage Bookings</ui:define>
+    <ui:define name="content">
+        <h:form id="staffBookingForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Pending Approvals -->
+            <p:panel header="Pending Bookings - Approve or Reject">
+                <p:dataTable value="#{staffBookingBean.pendingBookings}" var="b"
+                             emptyMessage="No pending bookings.">
+                    <p:column headerText="Student" sortBy="#{b.student.fullName}">
+                        <h:outputText value="#{b.student.fullName}"/>
+                        <br/>
+                        <small><h:outputText value="#{b.student.matricNumber}"/></small>
+                    </p:column>
+                    <p:column headerText="Room">
+                        <h:outputText value="#{b.room.roomNumber} | Block #{b.room.block}"/>
+                        <br/>
+                        <small><h:outputText value="#{b.room.type} | RM#{b.room.pricePerSemester}"/></small>
+                    </p:column>
+                    <p:column headerText="Date Submitted">
+                        <h:outputText value="#{b.bookingDate}">
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <p:commandButton value="Approve" icon="fas fa-check"
+                                         styleClass="p-button-success p-button-sm"
+                                         action="#{staffBookingBean.approveBooking(b.id)}"
+                                         update="staffBookingForm"
+                                         onclick="return confirm('Approve booking ##{b.id}?')"/>
+                        <p:commandButton value="Reject" icon="fas fa-times"
+                                         styleClass="p-button-danger p-button-sm"
+                                         update="staffBookingForm"
+                                         oncomplete="PF('rejectDialog').show()"
+                                         style="margin-left:5px">
+                            <f:setPropertyActionListener target="#{staffBookingBean.selectedBooking}" value="#{b}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- All Bookings -->
+            <p:panel header="All Bookings" style="margin-top:20px">
+                <p:dataTable value="#{staffBookingBean.allBookings}" var="b"
+                             rows="10" paginator="true" filterable="true"
+                             emptyMessage="No bookings found.">
+                    <p:column headerText="ID" style="width:60px">
+                        <h:outputText value="#{b.id}"/>
+                    </p:column>
+                    <p:column headerText="Student" filterBy="#{b.student.fullName}">
+                        <h:outputText value="#{b.student.fullName}"/>
+                    </p:column>
+                    <p:column headerText="Room" filterBy="#{b.room.roomNumber}">
+                        <h:outputText value="#{b.room.roomNumber}"/>
+                    </p:column>
+                    <p:column headerText="Status" filterBy="#{b.status}">
+                        <p:tag value="#{b.status}"
+                               severity="#{b.status == 'APPROVED' or b.status == 'CHECKED_IN' ? 'success' :
+                                          b.status == 'PENDING' ? 'warning' :
+                                          b.status == 'REJECTED' or b.status == 'CANCELLED' ? 'danger' : 'info'}"/>
+                    </p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{b.bookingDate}">
+                            <f:convertDateTime pattern="dd-MM-yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Reject Dialog -->
+            <p:dialog id="rejectDialog" widgetVar="rejectDialog" header="Reject Booking"
+                      modal="true" resizable="false">
+                <div class="field">
+                    <p:outputLabel for="reason" value="Rejection Reason *"/>
+                    <p:inputTextarea id="reason" value="#{staffBookingBean.rejectionReason}"
+                                     rows="4" styleClass="full-width" required="true"/>
+                </div>
+                <p:commandButton value="Confirm Reject" icon="fas fa-times"
+                                 styleClass="p-button-danger"
+                                 action="#{staffBookingBean.rejectBooking(staffBookingBean.selectedBooking.id)}"
+                                 update="staffBookingForm"
+                                 oncomplete="PF('rejectDialog').hide()"/>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

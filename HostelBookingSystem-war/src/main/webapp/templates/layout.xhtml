@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Hostel Room Booking System - <ui:insert name="pageTitle">Page</ui:insert></title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</h:head>
+<h:body>
+    <div class="layout-wrapper">
+
+        <!-- Top Navigation -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <i class="fas fa-building"></i>
+                <span class="system-title">Hostel Room Booking System</span>
+            </div>
+            <div class="topbar-right">
+                <h:form id="topbarForm" rendered="#{sessionBean.loggedIn}">
+                    <span class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        #{sessionBean.loggedInUser.fullName}
+                        <span class="role-badge">#{sessionBean.loggedInUser.role}</span>
+                    </span>
+                    <p:badge value="#{sessionBean.unreadNotificationCount}"
+                             severity="danger"
+                             rendered="#{sessionBean.unreadNotificationCount gt 0}">
+                        <h:link outcome="/student/notifications" rendered="#{sessionBean.student}">
+                            <i class="fas fa-bell"></i>
+                        </h:link>
+                    </p:badge>
+                    <p:commandButton value="Logout" icon="fas fa-sign-out-alt"
+                                     action="#{loginBean.logout}"
+                                     styleClass="logout-btn"/>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="layout-container">
+            <div class="sidebar" rendered="#{sessionBean.loggedIn}">
+                <h:form>
+                    <!-- Student Menu -->
+                    <ui:fragment rendered="#{sessionBean.student}">
+                        <p:panelMenu style="width:100%">
+                            <p:submenu label="Student Menu" icon="fas fa-user-graduate">
+                                <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
+                                            url="/student/dashboard.xhtml"/>
+                                <p:menuitem value="Browse Rooms" icon="fas fa-door-open"
+                                            url="/student/rooms.xhtml"/>
+                                <p:menuitem value="My Bookings" icon="fas fa-calendar-check"
+                                            url="/student/my-bookings.xhtml"/>
+                                <p:menuitem value="Payment" icon="fas fa-credit-card"
+                                            url="/student/payment.xhtml"/>
+                                <p:menuitem value="Complaints" icon="fas fa-comment-dots"
+                                            url="/student/complaints.xhtml"/>
+                                <p:menuitem value="Notifications" icon="fas fa-bell"
+                                            url="/student/notifications.xhtml"/>
+                            </p:submenu>
+                        </p:panelMenu>
+                    </ui:fragment>
+
+                    <!-- Staff Menu -->
+                    <ui:fragment rendered="#{sessionBean.staff}">
+                        <p:panelMenu style="width:100%">
+                            <p:submenu label="Staff Menu" icon="fas fa-user-tie">
+                                <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
+                                            url="/staff/dashboard.xhtml"/>
+                                <p:menuitem value="Manage Bookings" icon="fas fa-clipboard-list"
+                                            url="/staff/bookings.xhtml"/>
+                                <p:menuitem value="Check In/Out" icon="fas fa-exchange-alt"
+                                            url="/staff/checkinout.xhtml"/>
+                                <p:menuitem value="Maintenance" icon="fas fa-tools"
+                                            url="/staff/maintenance.xhtml"/>
+                            </p:submenu>
+                        </p:panelMenu>
+                    </ui:fragment>
+
+                    <!-- Admin Menu -->
+                    <ui:fragment rendered="#{sessionBean.admin}">
+                        <p:panelMenu style="width:100%">
+                            <p:submenu label="Admin Menu" icon="fas fa-user-shield">
+                                <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
+                                            url="/admin/dashboard.xhtml"/>
+                                <p:menuitem value="Manage Rooms" icon="fas fa-bed"
+                                            url="/admin/rooms.xhtml"/>
+                                <p:menuitem value="All Bookings" icon="fas fa-clipboard-list"
+                                            url="/admin/bookings.xhtml"/>
+                                <p:menuitem value="Complaints" icon="fas fa-comment-alt"
+                                            url="/admin/complaints.xhtml"/>
+                                <p:menuitem value="Reports" icon="fas fa-chart-bar"
+                                            url="/admin/reports.xhtml"/>
+                                <p:menuitem value="Registration Periods" icon="fas fa-calendar-alt"
+                                            url="/admin/registration-periods.xhtml"/>
+                            </p:submenu>
+                        </p:panelMenu>
+                    </ui:fragment>
+                </h:form>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <p:growl id="growl" life="4000" showDetail="true"/>
+                <h1 class="page-title"><ui:insert name="pageTitle">Page</ui:insert></h1>
+                <ui:insert name="content">Content goes here</ui:insert>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>

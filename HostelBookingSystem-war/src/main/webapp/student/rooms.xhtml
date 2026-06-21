@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Browse Available Rooms</ui:define>
+    <ui:define name="content">
+        <h:form id="roomForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Filter Panel -->
+            <p:panel header="Filter Rooms" toggleable="true" collapsed="false">
+                <div class="filter-row">
+                    <p:outputLabel for="roomType" value="Room Type:"/>
+                    <p:selectOneMenu id="roomType" value="#{roomBrowseBean.selectedType}"
+                                     style="width:200px">
+                        <f:selectItem itemLabel="All Types" itemValue=""/>
+                        <f:selectItems value="#{roomBrowseBean.roomTypes}" var="t"
+                                       itemLabel="#{t}" itemValue="#{t}"/>
+                    </p:selectOneMenu>
+                    <p:commandButton value="Filter" icon="fas fa-filter"
+                                     action="#{roomBrowseBean.filterByType}"
+                                     update="roomForm" styleClass="filter-btn"/>
+                </div>
+            </p:panel>
+
+            <!-- Room Cards -->
+            <p:dataGrid value="#{roomBrowseBean.rooms}" var="room"
+                        columns="3" rows="9" paginator="true"
+                        emptyMessage="No available rooms found."
+                        style="margin-top:20px">
+                <p:panel styleClass="room-card">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <div class="room-header">
+                            <i class="fas fa-door-open room-icon"></i>
+                            <h3>Room #{room.roomNumber}</h3>
+                        </div>
+                        <div class="room-details">
+                            <p><i class="fas fa-building"></i> Block #{room.block} | Floor #{room.floor}</p>
+                            <p><i class="fas fa-users"></i> Capacity: #{room.capacity} person(s)</p>
+                            <p><i class="fas fa-bed"></i> Type: #{room.type}</p>
+                            <p><i class="fas fa-money-bill"></i> RM #{room.pricePerSemester}/semester</p>
+                            <p>
+                                <p:tag value="WiFi" severity="success" rendered="#{room.hasWifi}" icon="fas fa-wifi"/>
+                                <p:tag value="AC" severity="info" rendered="#{room.hasAc}" icon="fas fa-snowflake" style="margin-left:5px"/>
+                            </p>
+                        </div>
+                        <p:tag value="#{room.status}" severity="success" styleClass="room-status"/>
+                        <p:commandButton value="Book This Room" icon="fas fa-calendar-plus"
+                                         styleClass="book-btn"
+                                         rendered="#{room.status == 'AVAILABLE'}"
+                                         action="#{bookingBean.submitBooking}"
+                                         update=":roomForm:msgs"
+                                         process="@form">
+                            <f:setPropertyActionListener target="#{bookingBean.selectedRoomId}" value="#{room.id}"/>
+                        </p:commandButton>
+                        <p:commandButton value="Unavailable" icon="fas fa-ban"
+                                         disabled="true"
+                                         rendered="#{room.status != 'AVAILABLE'}"/>
+                    </h:panelGrid>
+                </p:panel>
+            </p:dataGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

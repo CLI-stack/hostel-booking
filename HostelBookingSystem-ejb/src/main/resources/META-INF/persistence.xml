@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.1"
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd">
+
+    <persistence-unit name="hostelPU" transaction-type="JTA">
+        <jta-data-source>java:app/jdbc/hostelDB</jta-data-source>
+
+        <class>com.hostel.entity.User</class>
+        <class>com.hostel.entity.Room</class>
+        <class>com.hostel.entity.Booking</class>
+        <class>com.hostel.entity.Payment</class>
+        <class>com.hostel.entity.Complaint</class>
+        <class>com.hostel.entity.MaintenanceRequest</class>
+        <class>com.hostel.entity.CheckInOut</class>
+        <class>com.hostel.entity.Notification</class>
+        <class>com.hostel.entity.RegistrationPeriod</class>
+
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+        <properties>
+            <!-- EclipseLink (GlassFish 7 default JPA 3.1 provider) -->
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+            <property name="eclipselink.logging.level" value="WARNING"/>
+            <property name="eclipselink.target-database"
+                      value="org.eclipse.persistence.platform.database.H2Platform"/>
+        </properties>
+    </persistence-unit>
+</persistence>

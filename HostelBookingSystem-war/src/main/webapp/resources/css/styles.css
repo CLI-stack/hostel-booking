@@ -1,0 +1,295 @@
+/* ============================================================
+   Hostel Room Booking System - Global Styles
+   ============================================================ */
+
+:root {
+    --primary:    #2563eb;
+    --secondary:  #1e40af;
+    --success:    #16a34a;
+    --warning:    #d97706;
+    --danger:     #dc2626;
+    --info:       #0891b2;
+    --light:      #f8fafc;
+    --dark:       #1e293b;
+    --sidebar-w:  240px;
+    --topbar-h:   60px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f1f5f9;
+    color: var(--dark);
+}
+
+/* ---- Layout ---- */
+.layout-wrapper { min-height: 100vh; }
+
+.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--topbar-h);
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-left i { font-size: 1.5rem; }
+.system-title { font-size: 1.1rem; font-weight: 600; }
+
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.user-info { font-size: 0.9rem; }
+.role-badge {
+    background: rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    margin-left: 6px;
+}
+
+.logout-btn {
+    background: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    color: #fff !important;
+    font-size: 0.8rem !important;
+    padding: 6px 12px !important;
+}
+
+.layout-container {
+    display: flex;
+    margin-top: var(--topbar-h);
+    min-height: calc(100vh - var(--topbar-h));
+}
+
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--dark);
+    min-height: calc(100vh - var(--topbar-h));
+    padding: 16px 0;
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    overflow-y: auto;
+}
+
+.sidebar .ui-panelmenu { background: transparent; border: none; }
+.sidebar .ui-panelmenu .ui-panelmenu-header > a {
+    background: transparent !important;
+    color: #94a3b8 !important;
+    border: none !important;
+    font-size: 0.85rem;
+    padding: 12px 16px;
+}
+.sidebar .ui-panelmenu .ui-menuitem-link {
+    color: #cbd5e1 !important;
+    padding: 10px 20px 10px 32px !important;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+.sidebar .ui-panelmenu .ui-menuitem-link:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+}
+
+.main-content {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 24px;
+    max-width: calc(100vw - var(--sidebar-w));
+}
+
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* ---- Login Page ---- */
+.login-page {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.login-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.login-header i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.login-header h2 {
+    font-size: 1.4rem;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.login-header p { color: #64748b; font-size: 0.9rem; }
+
+.login-btn {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    margin-top: 16px !important;
+    padding: 12px !important;
+    font-size: 1rem !important;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.hint {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #0369a1;
+}
+
+/* ---- Fields ---- */
+.field { margin-bottom: 16px; }
+.field .ui-outputlabel { display: block; margin-bottom: 4px; font-weight: 500; }
+.full-width { width: 100% !important; }
+
+/* ---- Stats Row ---- */
+.stats-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 160px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--primary);
+}
+
+.stat-icon { font-size: 2rem; }
+.stat-icon.blue   { color: var(--primary); }
+.stat-icon.green  { color: var(--success); }
+.stat-icon.orange { color: var(--warning); }
+.stat-icon.red    { color: var(--danger); }
+.stat-icon.purple { color: #7c3aed; }
+
+.stat-number { font-size: 1.8rem; font-weight: 700; display: block; line-height: 1; }
+.stat-label  { font-size: 0.8rem; color: #64748b; margin-top: 4px; display: block; }
+
+/* ---- Welcome Panel ---- */
+.welcome-panel {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    margin-bottom: 20px;
+}
+
+.welcome-panel h3 { font-size: 1.3rem; margin-bottom: 4px; }
+.welcome-panel p  { opacity: 0.85; }
+
+/* ---- Room Cards ---- */
+.room-card {
+    border-radius: 12px !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 8px !important;
+}
+
+.room-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+}
+
+.room-header { text-align: center; padding: 12px 0; }
+.room-icon { font-size: 2.5rem; color: var(--primary); }
+.room-header h3 { margin-top: 8px; font-size: 1rem; }
+
+.room-details { padding: 8px 0; }
+.room-details p { font-size: 0.85rem; color: #475569; margin: 4px 0; }
+.room-details p i { width: 18px; color: var(--primary); }
+
+.room-status { margin: 8px 0; display: block; text-align: center; }
+.book-btn { width: 100% !important; margin-top: 8px !important; }
+
+/* ---- Action Buttons ---- */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ---- Filter Row ---- */
+.filter-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-btn { margin-left: 8px !important; }
+
+/* ---- Form Grid ---- */
+.form-grid .ui-panelgrid-cell { padding: 8px 12px; vertical-align: middle; }
+
+/* ---- Details Grid ---- */
+.details-grid .ui-panelgrid-cell {
+    padding: 6px 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* ---- Step Panel ---- */
+.step-panel { margin-bottom: 20px !important; }
+
+/* ---- Mono ---- */
+.mono { font-family: monospace; font-size: 0.85rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+    .stats-row { flex-direction: column; }
+}

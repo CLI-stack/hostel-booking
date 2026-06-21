@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Staff Dashboard</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:panel styleClass="welcome-panel">
+                <h3>Welcome, #{sessionBean.loggedInUser.fullName}!</h3>
+                <p>Role: Hostel Staff</p>
+            </p:panel>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <i class="fas fa-clock stat-icon orange"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{staffBookingBean.pendingBookings.size()}</span>
+                        <span class="stat-label">Pending Approvals</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-sign-in-alt stat-icon blue"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{staffBookingBean.checkedInRecords.size()}</span>
+                        <span class="stat-label">Currently Checked In</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-tools stat-icon red"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{maintenanceBean.allRequests.size()}</span>
+                        <span class="stat-label">Maintenance Requests</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Bookings Quick View -->
+            <p:panel header="Pending Bookings (Action Required)" style="margin-top:20px">
+                <p:dataTable value="#{staffBookingBean.pendingBookings}" var="b"
+                             rows="5" emptyMessage="No pending bookings.">
+                    <p:column headerText="Student">
+                        <h:outputText value="#{b.student.fullName}"/>
+                    </p:column>
+                    <p:column headerText="Room">
+                        <h:outputText value="#{b.room.roomNumber}"/>
+                    </p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{b.bookingDate}"/>
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <p:commandButton value="Approve" icon="fas fa-check"
+                                         styleClass="p-button-success p-button-sm"
+                                         action="#{staffBookingBean.approveBooking(b.id)}"
+                                         update="@form"/>
+                        <p:commandButton value="Reject" icon="fas fa-times"
+                                         styleClass="p-button-danger p-button-sm"
+                                         action="#{staffBookingBean.rejectBooking(b.id)}"
+                                         update="@form" style="margin-left:5px">
+                            <f:setPropertyActionListener target="#{staffBookingBean.rejectionReason}"
+                                                         value="Rejected by staff"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <div class="action-buttons" style="margin-top:20px">
+                <p:button value="Manage Bookings" icon="fas fa-clipboard-list" outcome="/staff/bookings"/>
+                <p:button value="Check In/Out" icon="fas fa-exchange-alt" outcome="/staff/checkinout"/>
+                <p:button value="Maintenance" icon="fas fa-tools" outcome="/staff/maintenance"/>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

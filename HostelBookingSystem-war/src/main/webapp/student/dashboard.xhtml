@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Student Dashboard</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:messages showDetail="true" closable="true"/>
+
+            <!-- Welcome Panel -->
+            <p:panel styleClass="welcome-panel">
+                <h3>Welcome, #{sessionBean.loggedInUser.fullName}!</h3>
+                <p>Matric: #{sessionBean.loggedInUser.matricNumber}</p>
+            </p:panel>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <i class="fas fa-clipboard-list stat-icon blue"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{bookingBean.myBookings.size()}</span>
+                        <span class="stat-label">Total Bookings</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-bell stat-icon orange"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{notificationBean.unreadCount}</span>
+                        <span class="stat-label">Unread Notifications</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-comment-dots stat-icon red"></i>
+                    <div class="stat-info">
+                        <span class="stat-number">#{complaintBean.myComplaints.size()}</span>
+                        <span class="stat-label">Complaints</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings -->
+            <p:panel header="My Recent Bookings" toggleable="true">
+                <p:dataTable value="#{bookingBean.myBookings}" var="b"
+                             rows="5" paginator="true"
+                             emptyMessage="No bookings found.">
+                    <p:column headerText="Booking ID">
+                        <h:outputText value="#{b.id}"/>
+                    </p:column>
+                    <p:column headerText="Room">
+                        <h:outputText value="#{b.room.roomNumber} (#{b.room.type})"/>
+                    </p:column>
+                    <p:column headerText="Status">
+                        <p:tag value="#{b.status}" severity="#{b.status == 'APPROVED' ? 'success' : b.status == 'PENDING' ? 'warning' : b.status == 'REJECTED' ? 'danger' : 'info'}"/>
+                    </p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{b.bookingDate}">
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Action">
+                        <p:button value="Make Payment" icon="fas fa-credit-card"
+                                  outcome="/student/payment"
+                                  rendered="#{b.status == 'APPROVED'}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Quick Actions -->
+            <p:panel header="Quick Actions" style="margin-top:20px">
+                <div class="action-buttons">
+                    <p:button value="Browse Rooms" icon="fas fa-door-open" outcome="/student/rooms"/>
+                    <p:button value="My Bookings" icon="fas fa-calendar-check" outcome="/student/my-bookings"/>
+                    <p:button value="Payment" icon="fas fa-credit-card" outcome="/student/payment"/>
+                    <p:button value="Submit Complaint" icon="fas fa-comment-dots" outcome="/student/complaints"/>
+                </div>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

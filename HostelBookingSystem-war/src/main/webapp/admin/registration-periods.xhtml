@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Registration Periods</ui:define>
+    <ui:define name="content">
+        <h:form id="periodForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Status Banner -->
+            <p:panel>
+                <p:tag value="Registration is OPEN" severity="success" icon="fas fa-check-circle"
+                       style="font-size:1.1em; padding:10px"
+                       rendered="#{adminRegistrationPeriodBean.registrationOpen}"/>
+                <p:tag value="Registration is CLOSED" severity="danger" icon="fas fa-times-circle"
+                       style="font-size:1.1em; padding:10px"
+                       rendered="#{!adminRegistrationPeriodBean.registrationOpen}"/>
+            </p:panel>
+
+            <!-- Create New Period -->
+            <p:panel header="Create New Registration Period" style="margin-top:20px" toggleable="true">
+                <p:panelGrid columns="2" styleClass="form-grid">
+                    <p:outputLabel for="name" value="Period Name *"/>
+                    <p:inputText id="name" value="#{adminRegistrationPeriodBean.newPeriod.name}"
+                                 required="true" placeholder="e.g. Semester 2 2025/2026"/>
+
+                    <p:outputLabel for="sem" value="Semester"/>
+                    <p:inputText id="sem" value="#{adminRegistrationPeriodBean.newPeriod.semester}"
+                                 placeholder="e.g. Semester 2"/>
+
+                    <p:outputLabel for="yr" value="Academic Year"/>
+                    <p:inputText id="yr" value="#{adminRegistrationPeriodBean.newPeriod.academicYear}"
+                                 placeholder="e.g. 2025/2026"/>
+
+                    <p:outputLabel for="start" value="Start Date *"/>
+                    <p:datePicker id="start" value="#{adminRegistrationPeriodBean.newPeriod.startDate}"
+                                  required="true" pattern="dd/MM/yyyy"/>
+
+                    <p:outputLabel for="end" value="End Date *"/>
+                    <p:datePicker id="end" value="#{adminRegistrationPeriodBean.newPeriod.endDate}"
+                                  required="true" pattern="dd/MM/yyyy"/>
+                </p:panelGrid>
+                <p:commandButton value="Create Period" icon="fas fa-plus"
+                                 action="#{adminRegistrationPeriodBean.createPeriod}"
+                                 update="periodForm" process="@form"/>
+            </p:panel>
+
+            <!-- All Periods -->
+            <p:panel header="All Registration Periods" style="margin-top:20px">
+                <p:dataTable value="#{adminRegistrationPeriodBean.periods}" var="p"
+                             rows="10" paginator="true"
+                             emptyMessage="No registration periods created.">
+                    <p:column headerText="Name">
+                        <h:outputText value="#{p.name}"/>
+                    </p:column>
+                    <p:column headerText="Semester">
+                        <h:outputText value="#{p.semester}"/>
+                    </p:column>
+                    <p:column headerText="Start Date">
+                        <h:outputText value="#{p.startDate}">
+                            <f:convertDateTime pattern="dd-MM-yyyy" type="localDate"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="End Date">
+                        <h:outputText value="#{p.endDate}">
+                            <f:convertDateTime pattern="dd-MM-yyyy" type="localDate"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Status">
+                        <p:tag value="#{p.active ? 'ACTIVE' : 'INACTIVE'}"
+                               severity="#{p.active ? 'success' : 'danger'}"/>
+                        <p:tag value="OPEN NOW" severity="success" icon="fas fa-lock-open"
+                               rendered="#{p.currentlyOpen}" style="margin-left:5px"/>
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <p:commandButton value="Deactivate" icon="fas fa-lock"
+                                         styleClass="p-button-warning p-button-sm"
+                                         rendered="#{p.active}"
+                                         action="#{adminRegistrationPeriodBean.deactivatePeriod(p.id)}"
+                                         update="periodForm"
+                                         onclick="return confirm('Deactivate this registration period?')"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

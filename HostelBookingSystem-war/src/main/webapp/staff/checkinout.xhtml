@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Check In / Check Out</ui:define>
+    <ui:define name="content">
+        <h:form id="checkForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Currently Checked In -->
+            <p:panel header="Currently Checked In Students">
+                <p:dataTable value="#{staffBookingBean.checkedInRecords}" var="c"
+                             emptyMessage="No students currently checked in.">
+                    <p:column headerText="Student">
+                        <h:outputText value="#{c.booking.student.fullName}"/>
+                    </p:column>
+                    <p:column headerText="Room">
+                        <h:outputText value="#{c.booking.room.roomNumber}"/>
+                    </p:column>
+                    <p:column headerText="Check In Time">
+                        <h:outputText value="#{c.checkInDate}">
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Action">
+                        <p:commandButton value="Check Out" icon="fas fa-sign-out-alt"
+                                         styleClass="p-button-warning p-button-sm"
+                                         oncomplete="PF('checkOutDialog').show()"
+                                         update="checkForm">
+                            <f:setPropertyActionListener target="#{staffBookingBean.selectedBooking}"
+                                                         value="#{c.booking}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Approved Bookings (Pending Check In) -->
+            <p:panel header="Approved Bookings — Pending Check In" style="margin-top:20px">
+                <p:dataTable value="#{staffBookingBean.allBookings}" var="b"
+                             rows="10" paginator="true"
+                             emptyMessage="No approved bookings pending check-in.">
+                    <f:facet name="header">Approved bookings ready for check-in</f:facet>
+                    <p:column headerText="Student">
+                        <h:outputText value="#{b.student.fullName}"
+                                      rendered="#{b.status == 'APPROVED'}"/>
+                    </p:column>
+                    <p:column headerText="Room">
+                        <h:outputText value="#{b.room.roomNumber}"
+                                      rendered="#{b.status == 'APPROVED'}"/>
+                    </p:column>
+                    <p:column headerText="Status">
+                        <p:tag value="#{b.status}"
+                               rendered="#{b.status == 'APPROVED'}"
+                               severity="success"/>
+                    </p:column>
+                    <p:column headerText="Action">
+                        <p:commandButton value="Check In" icon="fas fa-sign-in-alt"
+                                         styleClass="p-button-success p-button-sm"
+                                         rendered="#{b.status == 'APPROVED'}"
+                                         oncomplete="PF('checkInDialog').show()"
+                                         update="checkForm">
+                            <f:setPropertyActionListener target="#{staffBookingBean.selectedBooking}" value="#{b}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Check In Dialog -->
+            <p:dialog widgetVar="checkInDialog" header="Check In Student" modal="true" resizable="false">
+                <div class="field">
+                    <p:outputLabel value="Room Condition:"/>
+                    <p:inputText value="#{staffBookingBean.roomCondition}"
+                                 placeholder="e.g. Good condition" styleClass="full-width"/>
+                </div>
+                <div class="field">
+                    <p:outputLabel value="Notes:"/>
+                    <p:inputTextarea value="#{staffBookingBean.notes}" rows="3" styleClass="full-width"/>
+                </div>
+                <p:commandButton value="Confirm Check In" icon="fas fa-check"
+                                 styleClass="p-button-success"
+                                 action="#{staffBookingBean.checkIn(staffBookingBean.selectedBooking.id)}"
+                                 update="checkForm"
+                                 oncomplete="PF('checkInDialog').hide()"/>
+            </p:dialog>
+
+            <!-- Check Out Dialog -->
+            <p:dialog widgetVar="checkOutDialog" header="Check Out Student" modal="true" resizable="false">
+                <div class="field">
+                    <p:outputLabel value="Room Condition on Checkout:"/>
+                    <p:inputText value="#{staffBookingBean.roomCondition}"
+                                 placeholder="e.g. Good / Damaged" styleClass="full-width"/>
+                </div>
+                <div class="field">
+                    <p:outputLabel value="Notes:"/>
+                    <p:inputTextarea value="#{staffBookingBean.notes}" rows="3" styleClass="full-width"/>
+                </div>
+                <p:commandButton value="Confirm Check Out" icon="fas fa-check"
+                                 styleClass="p-button-warning"
+                                 action="#{staffBookingBean.checkOut(staffBookingBean.selectedBooking.id)}"
+                                 update="checkForm"
+                                 oncomplete="PF('checkOutDialog').hide()"/>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

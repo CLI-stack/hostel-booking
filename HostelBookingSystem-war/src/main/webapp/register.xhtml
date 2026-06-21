@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Register - Hostel Room Booking System</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+<h:body styleClass="login-page">
+    <div class="login-container">
+        <div class="login-card" style="max-width:500px">
+            <div class="login-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>Student Registration</h2>
+            </div>
+            <h:form id="registerForm">
+                <p:messages showDetail="true" closable="true"/>
+
+                <div class="field">
+                    <p:outputLabel for="fullName" value="Full Name *"/>
+                    <p:inputText id="fullName" value="#{registerBean.fullName}"
+                                 required="true" requiredMessage="Full name is required"
+                                 styleClass="full-width" placeholder="Full name as per IC"/>
+                    <p:message for="fullName"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="matric" value="Matric Number *"/>
+                    <p:inputText id="matric" value="#{registerBean.matricNumber}"
+                                 required="true" requiredMessage="Matric number is required"
+                                 styleClass="full-width" placeholder="e.g. 227670"/>
+                    <p:message for="matric"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="email" value="Email *"/>
+                    <p:inputText id="email" value="#{registerBean.email}"
+                                 required="true" requiredMessage="Email is required"
+                                 styleClass="full-width" placeholder="student@student.edu.my"/>
+                    <p:message for="email"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="phone" value="Phone Number"/>
+                    <p:inputText id="phone" value="#{registerBean.phone}"
+                                 styleClass="full-width" placeholder="01x-xxxxxxxx"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="username" value="Username *"/>
+                    <p:inputText id="username" value="#{registerBean.username}"
+                                 required="true" requiredMessage="Username is required"
+                                 styleClass="full-width" placeholder="Min 3 characters"/>
+                    <p:message for="username"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="password" value="Password *"/>
+                    <p:password id="password" value="#{registerBean.password}"
+                                required="true" requiredMessage="Password is required"
+                                styleClass="full-width" feedback="true"
+                                placeholder="Min 6 characters"/>
+                    <p:message for="password"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="confirmPassword" value="Confirm Password *"/>
+                    <p:password id="confirmPassword" value="#{registerBean.confirmPassword}"
+                                required="true" requiredMessage="Please confirm your password"
+                                styleClass="full-width" feedback="false"/>
+                    <p:message for="confirmPassword"/>
+                </div>
+
+                <p:commandButton value="Register" icon="fas fa-user-plus"
+                                 action="#{registerBean.register}"
+                                 styleClass="login-btn full-width"
+                                 update="registerForm"/>
+
+                <div class="login-footer">
+                    <p>Already have an account? <h:link value="Login here" outcome="login"/></p>
+                </div>
+            </h:form>
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</h:body>
+</html>

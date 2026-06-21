@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - Hostel Room Booking System</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+<h:body styleClass="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-building login-icon"></i>
+                <h2>Hostel Room Booking System</h2>
+                <p>Universiti Putra Malaysia</p>
+            </div>
+
+            <h:form id="loginForm">
+                <p:messages showDetail="true" closable="true"/>
+
+                <div class="field">
+                    <p:outputLabel for="username" value="Username"/>
+                    <p:inputText id="username" value="#{loginBean.username}"
+                                 placeholder="Enter username" required="true"
+                                 requiredMessage="Username is required"
+                                 styleClass="full-width"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="password" value="Password"/>
+                    <p:password id="password" value="#{loginBean.password}"
+                                placeholder="Enter password" required="true"
+                                requiredMessage="Password is required"
+                                feedback="false" styleClass="full-width"/>
+                </div>
+
+                <p:commandButton value="Login" icon="fas fa-sign-in-alt"
+                                 action="#{loginBean.login}"
+                                 styleClass="login-btn full-width"
+                                 update="loginForm"/>
+
+                <div class="login-footer">
+                    <p>Don't have an account?
+                        <h:link value="Register here" outcome="register"/>
+                    </p>
+                    <p class="hint">
+                        Demo: admin/Admin@123 | staff1/Staff@123 | student1/Student@123
+                    </p>
+                </div>
+            </h:form>
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</h:body>
+</html>
