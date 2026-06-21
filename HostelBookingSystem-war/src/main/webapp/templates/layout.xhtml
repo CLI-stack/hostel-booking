@@ -27,13 +27,6 @@
                         #{sessionBean.loggedInUser.fullName}
                         <span class="role-badge">#{sessionBean.loggedInUser.role}</span>
                     </span>
-                    <p:badge value="#{sessionBean.unreadNotificationCount}"
-                             severity="danger"
-                             rendered="#{sessionBean.unreadNotificationCount gt 0}">
-                        <h:link outcome="/student/notifications" rendered="#{sessionBean.student}">
-                            <i class="fas fa-bell"></i>
-                        </h:link>
-                    </p:badge>
                     <p:commandButton value="Logout" icon="fas fa-sign-out-alt"
                                      action="#{loginBean.logout}"
                                      styleClass="logout-btn"/>
@@ -50,17 +43,17 @@
                         <p:panelMenu style="width:100%">
                             <p:submenu label="Student Menu" icon="fas fa-user-graduate">
                                 <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
-                                            url="/student/dashboard.xhtml"/>
+                                            url="#{request.contextPath}/student/dashboard.xhtml"/>
                                 <p:menuitem value="Browse Rooms" icon="fas fa-door-open"
-                                            url="/student/rooms.xhtml"/>
+                                            url="#{request.contextPath}/student/rooms.xhtml"/>
                                 <p:menuitem value="My Bookings" icon="fas fa-calendar-check"
-                                            url="/student/my-bookings.xhtml"/>
+                                            url="#{request.contextPath}/student/my-bookings.xhtml"/>
                                 <p:menuitem value="Payment" icon="fas fa-credit-card"
-                                            url="/student/payment.xhtml"/>
+                                            url="#{request.contextPath}/student/payment.xhtml"/>
                                 <p:menuitem value="Complaints" icon="fas fa-comment-dots"
-                                            url="/student/complaints.xhtml"/>
+                                            url="#{request.contextPath}/student/complaints.xhtml"/>
                                 <p:menuitem value="Notifications" icon="fas fa-bell"
-                                            url="/student/notifications.xhtml"/>
+                                            url="#{request.contextPath}/student/notifications.xhtml"/>
                             </p:submenu>
                         </p:panelMenu>
                     </ui:fragment>
@@ -70,13 +63,13 @@
                         <p:panelMenu style="width:100%">
                             <p:submenu label="Staff Menu" icon="fas fa-user-tie">
                                 <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
-                                            url="/staff/dashboard.xhtml"/>
+                                            url="#{request.contextPath}/staff/dashboard.xhtml"/>
                                 <p:menuitem value="Manage Bookings" icon="fas fa-clipboard-list"
-                                            url="/staff/bookings.xhtml"/>
+                                            url="#{request.contextPath}/staff/bookings.xhtml"/>
                                 <p:menuitem value="Check In/Out" icon="fas fa-exchange-alt"
-                                            url="/staff/checkinout.xhtml"/>
+                                            url="#{request.contextPath}/staff/checkinout.xhtml"/>
                                 <p:menuitem value="Maintenance" icon="fas fa-tools"
-                                            url="/staff/maintenance.xhtml"/>
+                                            url="#{request.contextPath}/staff/maintenance.xhtml"/>
                             </p:submenu>
                         </p:panelMenu>
                     </ui:fragment>
@@ -86,17 +79,17 @@
                         <p:panelMenu style="width:100%">
                             <p:submenu label="Admin Menu" icon="fas fa-user-shield">
                                 <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
-                                            url="/admin/dashboard.xhtml"/>
+                                            url="#{request.contextPath}/admin/dashboard.xhtml"/>
                                 <p:menuitem value="Manage Rooms" icon="fas fa-bed"
-                                            url="/admin/rooms.xhtml"/>
+                                            url="#{request.contextPath}/admin/rooms.xhtml"/>
                                 <p:menuitem value="All Bookings" icon="fas fa-clipboard-list"
-                                            url="/admin/bookings.xhtml"/>
+                                            url="#{request.contextPath}/admin/bookings.xhtml"/>
                                 <p:menuitem value="Complaints" icon="fas fa-comment-alt"
-                                            url="/admin/complaints.xhtml"/>
+                                            url="#{request.contextPath}/admin/complaints.xhtml"/>
                                 <p:menuitem value="Reports" icon="fas fa-chart-bar"
-                                            url="/admin/reports.xhtml"/>
+                                            url="#{request.contextPath}/admin/reports.xhtml"/>
                                 <p:menuitem value="Registration Periods" icon="fas fa-calendar-alt"
-                                            url="/admin/registration-periods.xhtml"/>
+                                            url="#{request.contextPath}/admin/registration-periods.xhtml"/>
                             </p:submenu>
                         </p:panelMenu>
                     </ui:fragment>
