@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE glassfish-application PUBLIC
-    "-//GlassFish.org//DTD GlassFish Application Server 3.1 EE 6//EN"
-    "http://glassfish.org/dtds/glassfish-application_6_0-1.dtd">
-<glassfish-application>
-    <unique-id>HostelBookingSystem</unique-id>
-</glassfish-application>

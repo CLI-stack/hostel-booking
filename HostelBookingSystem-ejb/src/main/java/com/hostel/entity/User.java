@@ -2,6 +2,7 @@ package com.hostel.entity;
 
 import com.hostel.entity.enums.UserRole;
 import jakarta.persistence.*;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +30,8 @@ import java.util.List;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_gen")
+    @SequenceGenerator(name = "seq_gen", allocationSize = 1)
     private Long id;
 
     @NotBlank(message = "Username is required")

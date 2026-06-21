@@ -6,7 +6,6 @@ import com.hostel.entity.Booking;
 import com.hostel.entity.Payment;
 import com.hostel.entity.enums.BookingStatus;
 import com.hostel.entity.enums.PaymentStatus;
-import com.hostel.ws.PaymentWebServiceImpl;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
@@ -14,14 +13,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Stateless
 public class PaymentService {
 
+    private static final Logger LOG = Logger.getLogger(PaymentService.class.getName());
+
     @Inject private PaymentDAO paymentDAO;
     @Inject private BookingDAO bookingDAO;
     @Inject private NotificationService notificationService;
-    @Inject private PaymentWebServiceImpl paymentWebService;
 
     public Payment initiatePayment(Long bookingId, String paymentMethod) {
         Booking booking = bookingDAO.findById(bookingId)
@@ -51,11 +52,10 @@ public class PaymentService {
         Payment payment = paymentDAO.findById(paymentId)
             .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
 
-        // Call the JAX-WS Payment Web Service for external verification
-        boolean verified = paymentWebService.verifyPayment(
-            payment.getTransactionId(),
-            payment.getAmount()
-        );
+        // Verify payment — in production this would call the external JAX-WS
+        // PaymentWebService endpoint over HTTPS. The web service is available
+        // for external clients at: /PaymentWebServiceImplService?wsdl
+        boolean verified = verifyInternally(payment.getTransactionId(), payment.getAmount());
 
         if (verified) {
             payment.setStatus(PaymentStatus.VERIFIED);
@@ -105,5 +105,14 @@ public class PaymentService {
 
     public BigDecimal getTotalRevenue() {
         return paymentDAO.getTotalRevenue();
+    }
+
+    // Replicates the same logic as PaymentWebServiceImpl — shared verification rules
+    private boolean verifyInternally(String transactionId, BigDecimal amount) {
+        if (transactionId == null || transactionId.isBlank()) return false;
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) return false;
+        if (transactionId.startsWith("FAIL")) return false;
+        LOG.info("Payment verified internally: txn=" + transactionId + " amount=" + amount);
+        return true;
     }
 }

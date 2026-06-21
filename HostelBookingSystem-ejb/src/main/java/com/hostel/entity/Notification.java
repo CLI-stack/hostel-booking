@@ -2,6 +2,7 @@ package com.hostel.entity;
 
 import com.hostel.entity.enums.NotificationType;
 import jakarta.persistence.*;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -20,7 +21,8 @@ import java.time.LocalDateTime;
 public class Notification implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_gen")
+    @SequenceGenerator(name = "seq_gen", allocationSize = 1)
     private Long id;
 
     @NotNull(message = "User is required")

@@ -3,6 +3,7 @@ package com.hostel.entity;
 import com.hostel.entity.enums.RoomStatus;
 import com.hostel.entity.enums.RoomType;
 import jakarta.persistence.*;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -31,7 +32,8 @@ import java.util.List;
 public class Room implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_gen")
+    @SequenceGenerator(name = "seq_gen", allocationSize = 1)
     private Long id;
 
     @NotBlank(message = "Room number is required")
