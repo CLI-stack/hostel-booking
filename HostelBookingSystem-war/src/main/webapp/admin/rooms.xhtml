@@ -95,7 +95,7 @@
                     <p:column headerText="Actions" style="width:80px">
                         <p:commandButton icon="fas fa-edit" title="Edit Room"
                                          styleClass="p-button-sm p-button-text"
-                                         update="editDialog"
+                                         update=":roomListForm:editDialog"
                                          oncomplete="PF('editDialog').show()">
                             <f:setPropertyActionListener
                                 target="#{adminRoomBean.selectedRoom}" value="#{room}"/>
@@ -139,8 +139,8 @@
                     <div style="margin-top:12px">
                         <p:commandButton value="Save Changes" icon="fas fa-save"
                                          action="#{adminRoomBean.updateRoom}"
-                                         update="roomListForm listMsgs"
-                                         process="editDialog"
+                                         update=":roomListForm"
+                                         process=":roomListForm:editDialog"
                                          oncomplete="if (!args.validationFailed) PF('editDialog').hide()"/>
                         <p:commandButton value="Cancel" icon="fas fa-times"
                                          styleClass="p-button-secondary"
