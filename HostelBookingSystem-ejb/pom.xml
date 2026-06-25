@@ -25,11 +25,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- H2 (bundled for datasource) -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>9.7.0</version>
+            </dependency>
 
         <!-- BCrypt for password hashing -->
         <dependency>
