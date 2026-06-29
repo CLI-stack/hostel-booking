@@ -8,7 +8,6 @@
     <ui:define name="pageTitle">User Management</ui:define>
     <ui:define name="content">
 
-        <!-- Single form — avoids cross-form update issues -->
         <h:form id="userMgmtForm">
             <p:messages id="userMsgs" showDetail="true" closable="true"/>
 
@@ -17,56 +16,64 @@
                 <p:panelGrid columns="2" styleClass="form-grid">
 
                     <p:outputLabel for="roleSelect" value="Role *"/>
-                    <p:selectOneMenu id="roleSelect" value="#{registerBean.selectedRole}"
+                    <p:selectOneMenu id="roleSelect"
+                                     value="#{adminCreateUserBean.selectedRole}"
                                      required="true" style="width:220px">
-                        <f:selectItem itemLabel="Student" itemValue="STUDENT"/>
                         <f:selectItem itemLabel="Staff"   itemValue="STAFF"/>
                         <f:selectItem itemLabel="Admin"   itemValue="ADMIN"/>
+                        <f:selectItem itemLabel="Student" itemValue="STUDENT"/>
                     </p:selectOneMenu>
 
                     <p:outputLabel value="Email Domain Rules"/>
                     <div class="domain-hints">
-                        <small>Student: @student.upm.edu.my</small><br/>
-                        <small>Staff: @staff.upm.edu.my</small><br/>
-                        <small>Admin: @admin.upm.edu.my</small>
+                        <small>Student: #{adminCreateUserBean.studentDomain}</small><br/>
+                        <small>Staff:   #{adminCreateUserBean.staffDomain}</small><br/>
+                        <small>Admin:   #{adminCreateUserBean.adminDomain}</small>
                     </div>
 
                     <p:outputLabel for="uFullName" value="Full Name *"/>
-                    <p:inputText id="uFullName" value="#{registerBean.fullName}"
+                    <p:inputText id="uFullName"
+                                 value="#{adminCreateUserBean.fullName}"
                                  required="true" styleClass="full-width"
                                  placeholder="Full name"/>
 
                     <p:outputLabel for="uEmail" value="Email *"/>
-                    <p:inputText id="uEmail" value="#{registerBean.email}"
+                    <p:inputText id="uEmail"
+                                 value="#{adminCreateUserBean.email}"
                                  required="true" styleClass="full-width"
                                  placeholder="Must match role domain above"/>
 
                     <p:outputLabel for="uUsername" value="Username *"/>
-                    <p:inputText id="uUsername" value="#{registerBean.username}"
+                    <p:inputText id="uUsername"
+                                 value="#{adminCreateUserBean.username}"
                                  required="true" styleClass="full-width"
                                  placeholder="Min 3 characters"/>
 
                     <p:outputLabel for="uPhone" value="Phone"/>
-                    <p:inputText id="uPhone" value="#{registerBean.phone}"
+                    <p:inputText id="uPhone"
+                                 value="#{adminCreateUserBean.phone}"
                                  styleClass="full-width" placeholder="01x-xxxxxxxx"/>
 
                     <p:outputLabel for="uMatric" value="Matric No."/>
-                    <p:inputText id="uMatric" value="#{registerBean.matricNumber}"
-                                 styleClass="full-width" placeholder="For students only"/>
+                    <p:inputText id="uMatric"
+                                 value="#{adminCreateUserBean.matricNumber}"
+                                 styleClass="full-width" placeholder="Students only"/>
 
                     <p:outputLabel for="uPwd" value="Password *"/>
-                    <p:password id="uPwd" value="#{registerBean.password}"
+                    <p:password id="uPwd"
+                                value="#{adminCreateUserBean.password}"
                                 required="true" toggleMask="true" feedback="true"
                                 styleClass="full-width" placeholder="Min 6 characters"/>
 
                     <p:outputLabel for="uConfirmPwd" value="Confirm Password *"/>
-                    <p:password id="uConfirmPwd" value="#{registerBean.confirmPassword}"
+                    <p:password id="uConfirmPwd"
+                                value="#{adminCreateUserBean.confirmPassword}"
                                 required="true" toggleMask="true" feedback="false"
                                 styleClass="full-width"/>
                 </p:panelGrid>
 
                 <p:commandButton value="Create User" icon="fas fa-user-plus"
-                                 action="#{registerBean.adminCreateUser}"
+                                 action="#{adminCreateUserBean.createUser}"
                                  update="userMgmtForm"
                                  process="userMgmtForm"
                                  styleClass="p-button-success"
@@ -75,7 +82,7 @@
 
             <!-- All Users List -->
             <p:panel header="All System Users" style="margin-top:20px">
-                <p:dataTable value="#{adminUserListBean.allUsers}" var="u"
+                <p:dataTable value="#{adminCreateUserBean.allUsers}" var="u"
                              rows="10" paginator="true"
                              emptyMessage="No users found.">
                     <p:column headerText="Full Name">
@@ -88,7 +95,6 @@
                         <h:outputText value="#{u.email}"/>
                     </p:column>
                     <p:column headerText="Role">
-                        <!-- Use toString() to avoid enum EL comparison issues -->
                         <p:tag value="#{u.role.name()}"
                                severity="#{u.role.name() == 'ADMIN' ? 'danger' :
                                           u.role.name() == 'STAFF' ? 'warning' : 'info'}"/>
