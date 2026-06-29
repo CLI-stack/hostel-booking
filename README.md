@@ -1,22 +1,5 @@
 # Hostel Room Booking System
 
-**Course:** SSW4353 — Component-Based Software Engineering
-**Group:** Group 1 | Semester 2, 2025/2026
-**University:** Universiti Putra Malaysia (UPM)
-**Lecturer:** Prof. Madya Dr. Novia Indriaty Admodisastro
-
----
-
-## Team Members
-
-| No. | Name | Matric No. |
-|-----|------|------------|
-| 1 | Nur Amalina Binti Babah | 227670 |
-| 2 | Nureen Husna Binti Sharil | 227750 |
-| 3 | Nur Alya Nabilah Binti Muhammad Adzuan | 228131 |
-| 4 | Zeti Ellyana Binti Norman Yusof | 227912 |
-| 5 | Wan Alia Kautsar Binti Wan Mohd Hazim | 227900 |
-
 ---
 
 ## Project Overview
