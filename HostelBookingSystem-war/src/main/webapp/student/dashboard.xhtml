@@ -57,7 +57,7 @@
                     </p:column>
                     <p:column headerText="Date">
                         <h:outputText value="#{b.bookingDate}">
-                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm" type="localDateTime"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Action">

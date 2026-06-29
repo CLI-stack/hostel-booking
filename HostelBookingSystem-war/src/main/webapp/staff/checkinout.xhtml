@@ -22,7 +22,7 @@
                     </p:column>
                     <p:column headerText="Check In Time">
                         <h:outputText value="#{c.checkInDate}">
-                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm" type="localDateTime"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Action">

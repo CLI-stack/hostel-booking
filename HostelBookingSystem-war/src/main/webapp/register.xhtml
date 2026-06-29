@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
     <meta charset="UTF-8"/>
     <title>Register - Hostel Room Booking System</title>
@@ -11,34 +12,38 @@
     <div class="login-container">
         <div class="login-card" style="max-width:500px">
             <div class="login-header">
-                <i class="fas fa-user-plus"></i>
+                <i class="fas fa-user-plus login-icon"></i>
                 <h2>Student Registration</h2>
+                <p>Universiti Putra Malaysia</p>
             </div>
             <h:form id="registerForm">
-                <p:messages showDetail="true" closable="true"/>
+                <p:messages id="msgs" showDetail="true" closable="true"/>
 
                 <div class="field">
                     <p:outputLabel for="fullName" value="Full Name *"/>
                     <p:inputText id="fullName" value="#{registerBean.fullName}"
-                                 required="true" requiredMessage="Full name is required"
-                                 styleClass="full-width" placeholder="Full name as per IC"/>
+                                 required="true" styleClass="full-width"
+                                 placeholder="Full name as per IC"/>
                     <p:message for="fullName"/>
                 </div>
 
                 <div class="field">
                     <p:outputLabel for="matric" value="Matric Number *"/>
                     <p:inputText id="matric" value="#{registerBean.matricNumber}"
-                                 required="true" requiredMessage="Matric number is required"
-                                 styleClass="full-width" placeholder="e.g. 227670"/>
+                                 required="true" styleClass="full-width"
+                                 placeholder="e.g. 227670"/>
                     <p:message for="matric"/>
                 </div>
 
                 <div class="field">
-                    <p:outputLabel for="email" value="Email *"/>
+                    <p:outputLabel for="email" value="Email Address *"/>
                     <p:inputText id="email" value="#{registerBean.email}"
-                                 required="true" requiredMessage="Email is required"
-                                 styleClass="full-width" placeholder="student@student.edu.my"/>
+                                 required="true" styleClass="full-width"
+                                 placeholder="Must end with @student.upm.edu.my"/>
                     <p:message for="email"/>
+                    <small class="field-hint">
+                        Student email must end with @student.upm.edu.my
+                    </small>
                 </div>
 
                 <div class="field">
@@ -50,16 +55,16 @@
                 <div class="field">
                     <p:outputLabel for="username" value="Username *"/>
                     <p:inputText id="username" value="#{registerBean.username}"
-                                 required="true" requiredMessage="Username is required"
-                                 styleClass="full-width" placeholder="Min 3 characters"/>
+                                 required="true" styleClass="full-width"
+                                 placeholder="Min 3 characters"/>
                     <p:message for="username"/>
                 </div>
 
                 <div class="field">
                     <p:outputLabel for="password" value="Password *"/>
                     <p:password id="password" value="#{registerBean.password}"
-                                required="true" requiredMessage="Password is required"
-                                styleClass="full-width" feedback="true"
+                                required="true" styleClass="full-width"
+                                toggleMask="true" feedback="true"
                                 placeholder="Min 6 characters"/>
                     <p:message for="password"/>
                 </div>
@@ -67,9 +72,14 @@
                 <div class="field">
                     <p:outputLabel for="confirmPassword" value="Confirm Password *"/>
                     <p:password id="confirmPassword" value="#{registerBean.confirmPassword}"
-                                required="true" requiredMessage="Please confirm your password"
-                                styleClass="full-width" feedback="false"/>
+                                required="true" styleClass="full-width"
+                                toggleMask="true" feedback="false"/>
                     <p:message for="confirmPassword"/>
+                </div>
+
+                <div class="role-note">
+                    This registration is for Student accounts only.
+                    Admin and Staff accounts are created by the system administrator.
                 </div>
 
                 <p:commandButton value="Register" icon="fas fa-user-plus"

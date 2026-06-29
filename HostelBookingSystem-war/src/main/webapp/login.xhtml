@@ -19,7 +19,7 @@
             </div>
 
             <h:form id="loginForm">
-                <p:messages showDetail="true" closable="true"/>
+                <p:messages id="loginMsgs" showDetail="true" closable="true"/>
 
                 <div class="field">
                     <p:outputLabel for="username" value="Username"/>
@@ -31,10 +31,12 @@
 
                 <div class="field">
                     <p:outputLabel for="password" value="Password"/>
+                    <!-- toggleMask="true" adds the eye icon for password visibility -->
                     <p:password id="password" value="#{loginBean.password}"
                                 placeholder="Enter password" required="true"
                                 requiredMessage="Password is required"
-                                feedback="false" styleClass="full-width"/>
+                                feedback="false" toggleMask="true"
+                                styleClass="full-width"/>
                 </div>
 
                 <p:commandButton value="Login" icon="fas fa-sign-in-alt"
@@ -43,6 +45,10 @@
                                  update="loginForm"/>
 
                 <div class="login-footer">
+                    <p>
+                        <h:link value="Forgot Password?" outcome="forgot-password"
+                                styleClass="forgot-link"/>
+                    </p>
                     <p>Don't have an account?
                         <h:link value="Register here" outcome="register"/>
                     </p>

@@ -56,7 +56,7 @@
                     </p:column>
                     <p:column headerText="Date Submitted">
                         <h:outputText value="#{c.createdAt}">
-                            <f:convertDateTime pattern="dd-MM-yyyy"/>
+                            <f:convertDateTime pattern="dd-MM-yyyy" type="localDateTime"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Actions">

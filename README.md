@@ -289,3 +289,79 @@ HostelBookingSystem-war  →  4.2 MB WAR
 HostelBookingSystem-ear  →  6.7 MB EAR
 Built with: JDK 18 + Maven 3.9.6
 ```
+
+---
+
+## Non-Functional Requirements (NFRs)
+
+| NFR | Requirement | Implementation |
+|-----|-------------|----------------|
+| **Performance** | Pages must load within 3 seconds under normal load | EJB stateless beans, connection pooling (min=5, max=20), EclipseLink lazy fetching |
+| **Security** | Passwords must be stored securely; sessions must be protected | BCrypt hashing (jbcrypt 0.4), HTTPS-ready, session invalidation on logout, role-based AuthFilter |
+| **Usability** | All actions must provide immediate feedback | PrimeFaces `p:growl` toast notifications, `p:ajaxStatus` loading indicator, confirmation dialogs with reference IDs |
+| **Reliability** | System must handle invalid input gracefully | Jakarta Bean Validation (`@NotBlank`, `@Email`, `@Min`), required field enforcement, custom error messages |
+| **Scalability** | System must support concurrent users | GlassFish 7 thread pool, stateless EJB design, CDI session-scoped beans only for user context |
+| **Maintainability** | Code must follow layered architecture | EAR multi-module structure: EJB (backend) + WAR (frontend) clearly separated |
+| **Portability** | EAR must run on JDK 17 and JDK 18 | Compiled with `--release 17` (bytecode version 61) |
+| **Compatibility** | Must run on GlassFish 7.0.25 | Jakarta EE 10 APIs (`jakarta.*`), EclipseLink 4.0, Mojarra 4.0 |
+
+---
+
+## System Constraints
+
+| Constraint | Description |
+|-----------|-------------|
+| **Booking Limit** | A student can only have **one active booking** at a time (enforced in `BookingService`) |
+| **Registration Window** | Bookings can only be submitted during an **active registration period** (enforced in `BookingService`) |
+| **No Duplicate Rooms** | The same room cannot be double-booked — validated before persisting (enforced in `BookingService`) |
+| **Role-Based Access** | Pages under `/student/*`, `/staff/*`, `/admin/*` are protected by `AuthFilter`; unauthorized access redirects to login |
+| **Email Domain Rules** | Student registration requires `@student.upm.edu.my`; Staff requires `@staff.upm.edu.my`; Admin requires `@admin.upm.edu.my` |
+| **Student Self-Registration** | Only Student accounts can be self-registered from the public registration page |
+| **Admin/Staff Account Creation** | Admin and Staff accounts can only be created by an authorized Administrator via the User Management panel |
+| **Payment Flow** | Payment can only be initiated for bookings with status `APPROVED`; verification goes through `PaymentWebService` (JAX-WS SOAP) |
+| **Database** | Schema is created automatically via JDBC on first deployment; uses `AUTO_INCREMENT` primary keys compatible with MySQL |
+| **Session Timeout** | Sessions expire after 30 minutes of inactivity (`web.xml` session-timeout) |
+| **Java Version** | Compiled with Java 17 target for GlassFish 7 compatibility; all Java 17+ features (switch expressions, `isBlank()`, `toList()`) are used |
+
+---
+
+## API and Third-Party Components
+
+### Jakarta EE 10 Built-in APIs
+
+| API | Version | Purpose | Included In |
+|-----|---------|---------|------------|
+| **Jakarta Faces (JSF)** | 4.0 | Frontend MVC — XHTML pages, Facelets templating | GlassFish 7 (Mojarra 4.0.11) |
+| **Enterprise JavaBeans (EJB)** | 4.0 | `@Stateless` business services, `@Singleton` startup bean | GlassFish 7 |
+| **Jakarta Persistence (JPA)** | 3.1 | ORM — entity mapping, JPQL named queries | GlassFish 7 (EclipseLink 4.0.5) |
+| **Jakarta XML Web Services (JAX-WS)** | 4.0 | SOAP Payment Verification Web Service endpoint | GlassFish 7 (Metro) |
+| **CDI** | 4.0 | Dependency injection — `@Named`, `@ViewScoped`, `@SessionScoped` | GlassFish 7 (Weld) |
+| **Jakarta Bean Validation** | 3.0 | Field-level validation annotations on entities and beans | GlassFish 7 |
+| **Jakarta Servlet** | 6.0 | `AuthFilter` for role-based URL protection | GlassFish 7 |
+
+### Third-Party Libraries
+
+| Library | Version | Purpose | Source / Link | Alternative |
+|---------|---------|---------|--------------|-------------|
+| **PrimeFaces** | 14.0.0 (jakarta) | Rich UI — `p:dataTable`, `p:dialog`, `p:password` (toggleMask), `p:growl`, `p:ajaxStatus`, `p:tag` | [primefaces.org](https://www.primefaces.org) | OmniFaces, RichFaces |
+| **MySQL Connector/J** | 9.7.0 | JDBC driver for MySQL 8+ database connectivity | [dev.mysql.com/downloads/connector/j](https://dev.mysql.com/downloads/connector/j/) | MariaDB Connector, H2 (dev) |
+| **jBCrypt** | 0.4 | BCrypt password hashing — `PasswordUtil.hash()` and `PasswordUtil.verify()` | [mindrot.org/projects/jBCrypt](https://www.mindrot.org/projects/jBCrypt/) | Spring Security Crypto, Argon2 |
+| **Font Awesome** | 6.4.0 | Icon library for all UI icons (CDN) | [fontawesome.com](https://fontawesome.com) | Material Icons, Feather Icons |
+
+### Application Server & Build Tools
+
+| Tool | Version | Purpose | Source |
+|------|---------|---------|--------|
+| **GlassFish** | 7.0.25 | Jakarta EE 10 application server — deploys the EAR | [glassfish.org](https://glassfish.org) |
+| **EclipseLink** | 4.0.5 | JPA provider — schema validation, JPQL execution | Bundled with GlassFish 7 |
+| **Mojarra** | 4.0.11 | Jakarta Faces reference implementation | Bundled with GlassFish 7 |
+| **Metro (JAX-WS RI)** | (bundled) | SOAP web service runtime for PaymentWebService | Bundled with GlassFish 7 |
+| **Apache Maven** | 3.9.6 | Multi-module EAR build and dependency management | [maven.apache.org](https://maven.apache.org) |
+| **JDK** | 17 / 18 | Java platform — compiled with `--release 17` | [openjdk.org](https://openjdk.org) |
+| **MySQL** | 8.x | Production relational database | [mysql.com](https://www.mysql.com) |
+
+### Internal Web Service
+
+| Service | Endpoint | Protocol | Description |
+|---------|----------|---------|-------------|
+| **PaymentWebService** | `/hostel-booking/PaymentWebServiceImplService` | SOAP / JAX-WS | Stateless EJB published as web service. Verifies payment transactions by `transactionId` and `amount`. WSDL: `?wsdl` suffix. |

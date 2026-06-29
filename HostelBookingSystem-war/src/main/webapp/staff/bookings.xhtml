@@ -26,7 +26,7 @@
                     </p:column>
                     <p:column headerText="Date Submitted">
                         <h:outputText value="#{b.bookingDate}">
-                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm" type="localDateTime"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Actions">
@@ -68,7 +68,7 @@
                     </p:column>
                     <p:column headerText="Date">
                         <h:outputText value="#{b.bookingDate}">
-                            <f:convertDateTime pattern="dd-MM-yyyy"/>
+                            <f:convertDateTime pattern="dd-MM-yyyy" type="localDateTime"/>
                         </h:outputText>
                     </p:column>
                 </p:dataTable>

@@ -29,7 +29,7 @@
                     </p:column>
                     <p:column headerText="Date">
                         <h:outputText value="#{n.sentAt}">
-                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm" type="localDateTime"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Status" style="width:100px">

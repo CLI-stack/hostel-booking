@@ -12,6 +12,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </h:head>
 <h:body>
+    <!-- Global loading indicator -->
+    <p:ajaxStatus>
+        <f:facet name="start">
+            <div class="global-loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
+        </f:facet>
+        <f:facet name="complete">
+            <div class="global-loading" style="display:none"></div>
+        </f:facet>
+    </p:ajaxStatus>
+
     <div class="layout-wrapper">
 
         <!-- Top Navigation -->
@@ -27,6 +39,9 @@
                         #{sessionBean.loggedInUser.fullName}
                         <span class="role-badge">#{sessionBean.loggedInUser.role}</span>
                     </span>
+                    <a href="#{request.contextPath}/profile.xhtml" class="topbar-link">
+                        <i class="fas fa-user-edit"></i> Profile
+                    </a>
                     <p:commandButton value="Logout" icon="fas fa-sign-out-alt"
                                      action="#{loginBean.logout}"
                                      styleClass="logout-btn"/>
@@ -34,7 +49,7 @@
             </div>
         </div>
 
-        <!-- Sidebar -->
+        <!-- Sidebar + Content -->
         <div class="layout-container">
             <div class="sidebar" rendered="#{sessionBean.loggedIn}">
                 <h:form>
@@ -42,18 +57,20 @@
                     <ui:fragment rendered="#{sessionBean.student}">
                         <p:panelMenu style="width:100%">
                             <p:submenu label="Student Menu" icon="fas fa-user-graduate">
-                                <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
+                                <p:menuitem value="Dashboard"    icon="fas fa-tachometer-alt"
                                             url="#{request.contextPath}/student/dashboard.xhtml"/>
                                 <p:menuitem value="Browse Rooms" icon="fas fa-door-open"
                                             url="#{request.contextPath}/student/rooms.xhtml"/>
-                                <p:menuitem value="My Bookings" icon="fas fa-calendar-check"
+                                <p:menuitem value="My Bookings"  icon="fas fa-calendar-check"
                                             url="#{request.contextPath}/student/my-bookings.xhtml"/>
-                                <p:menuitem value="Payment" icon="fas fa-credit-card"
+                                <p:menuitem value="Payment"      icon="fas fa-credit-card"
                                             url="#{request.contextPath}/student/payment.xhtml"/>
-                                <p:menuitem value="Complaints" icon="fas fa-comment-dots"
+                                <p:menuitem value="Complaints"   icon="fas fa-comment-dots"
                                             url="#{request.contextPath}/student/complaints.xhtml"/>
                                 <p:menuitem value="Notifications" icon="fas fa-bell"
                                             url="#{request.contextPath}/student/notifications.xhtml"/>
+                                <p:menuitem value="Edit Profile" icon="fas fa-user-edit"
+                                            url="#{request.contextPath}/profile.xhtml"/>
                             </p:submenu>
                         </p:panelMenu>
                     </ui:fragment>
@@ -62,14 +79,16 @@
                     <ui:fragment rendered="#{sessionBean.staff}">
                         <p:panelMenu style="width:100%">
                             <p:submenu label="Staff Menu" icon="fas fa-user-tie">
-                                <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
+                                <p:menuitem value="Dashboard"       icon="fas fa-tachometer-alt"
                                             url="#{request.contextPath}/staff/dashboard.xhtml"/>
                                 <p:menuitem value="Manage Bookings" icon="fas fa-clipboard-list"
                                             url="#{request.contextPath}/staff/bookings.xhtml"/>
-                                <p:menuitem value="Check In/Out" icon="fas fa-exchange-alt"
+                                <p:menuitem value="Check In/Out"    icon="fas fa-exchange-alt"
                                             url="#{request.contextPath}/staff/checkinout.xhtml"/>
-                                <p:menuitem value="Maintenance" icon="fas fa-tools"
+                                <p:menuitem value="Maintenance"     icon="fas fa-tools"
                                             url="#{request.contextPath}/staff/maintenance.xhtml"/>
+                                <p:menuitem value="Edit Profile"    icon="fas fa-user-edit"
+                                            url="#{request.contextPath}/profile.xhtml"/>
                             </p:submenu>
                         </p:panelMenu>
                     </ui:fragment>
@@ -78,18 +97,22 @@
                     <ui:fragment rendered="#{sessionBean.admin}">
                         <p:panelMenu style="width:100%">
                             <p:submenu label="Admin Menu" icon="fas fa-user-shield">
-                                <p:menuitem value="Dashboard" icon="fas fa-tachometer-alt"
+                                <p:menuitem value="Dashboard"          icon="fas fa-tachometer-alt"
                                             url="#{request.contextPath}/admin/dashboard.xhtml"/>
-                                <p:menuitem value="Manage Rooms" icon="fas fa-bed"
+                                <p:menuitem value="Manage Rooms"       icon="fas fa-bed"
                                             url="#{request.contextPath}/admin/rooms.xhtml"/>
-                                <p:menuitem value="All Bookings" icon="fas fa-clipboard-list"
+                                <p:menuitem value="All Bookings"       icon="fas fa-clipboard-list"
                                             url="#{request.contextPath}/admin/bookings.xhtml"/>
-                                <p:menuitem value="Complaints" icon="fas fa-comment-alt"
+                                <p:menuitem value="Complaints"         icon="fas fa-comment-alt"
                                             url="#{request.contextPath}/admin/complaints.xhtml"/>
-                                <p:menuitem value="Reports" icon="fas fa-chart-bar"
+                                <p:menuitem value="Reports"            icon="fas fa-chart-bar"
                                             url="#{request.contextPath}/admin/reports.xhtml"/>
                                 <p:menuitem value="Registration Periods" icon="fas fa-calendar-alt"
                                             url="#{request.contextPath}/admin/registration-periods.xhtml"/>
+                                <p:menuitem value="User Management"    icon="fas fa-users-cog"
+                                            url="#{request.contextPath}/admin/users.xhtml"/>
+                                <p:menuitem value="Edit Profile"       icon="fas fa-user-edit"
+                                            url="#{request.contextPath}/profile.xhtml"/>
                             </p:submenu>
                         </p:panelMenu>
                     </ui:fragment>
@@ -98,7 +121,7 @@
 
             <!-- Main Content -->
             <div class="main-content">
-                <p:growl id="growl" life="4000" showDetail="true"/>
+                <p:growl id="growl" life="4000" showDetail="true" sticky="false"/>
                 <h1 class="page-title"><ui:insert name="pageTitle">Page</ui:insert></h1>
                 <ui:insert name="content">Content goes here</ui:insert>
             </div>
