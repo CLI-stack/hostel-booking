@@ -62,9 +62,7 @@
                     </p:column>
                     <p:column headerText="Status" filterBy="#{b.status}">
                         <p:tag value="#{b.status}"
-                               severity="#{b.status == 'APPROVED' or b.status == 'CHECKED_IN' ? 'success' :
-                                          b.status == 'PENDING' ? 'warning' :
-                                          b.status == 'REJECTED' or b.status == 'CANCELLED' ? 'danger' : 'info'}"/>
+                               styleClass="#{b.status == 'PENDING' ? 'badge badge-pending' : b.status == 'APPROVED' ? 'badge badge-booked' : b.status == 'CHECKED_IN' ? 'badge badge-checkedin' : b.status == 'REJECTED' ? 'badge badge-rejected' : b.status == 'CANCELLED' ? 'badge badge-cancelled' : 'badge badge-info'}"/>
                     </p:column>
                     <p:column headerText="Date">
                         <h:outputText value="#{b.bookingDate}">
