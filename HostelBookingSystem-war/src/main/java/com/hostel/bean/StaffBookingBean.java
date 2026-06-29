@@ -2,10 +2,13 @@ package com.hostel.bean;
 
 import com.hostel.entity.Booking;
 import com.hostel.entity.CheckInOut;
+import com.hostel.entity.Payment;
 import com.hostel.entity.User;
 import com.hostel.entity.enums.BookingStatus;
+import com.hostel.entity.enums.PaymentStatus;
 import com.hostel.service.BookingService;
 import com.hostel.service.CheckInOutService;
+import com.hostel.service.PaymentService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -15,6 +18,7 @@ import jakarta.inject.Named;
 import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 @Named
 @ViewScoped
@@ -22,6 +26,7 @@ public class StaffBookingBean implements Serializable {
 
     @Inject private BookingService bookingService;
     @Inject private CheckInOutService checkInOutService;
+    @Inject private PaymentService paymentService;
 
     private List<Booking> pendingBookings;
     private List<Booking> allBookings;
@@ -70,15 +75,40 @@ public class StaffBookingBean implements Serializable {
     public void checkIn(Long bookingId) {
         User staff = getStaff();
         if (staff == null) return;
+
+        // Enforce: payment must be VERIFIED before check-in is allowed
+        if (!isPaymentVerified(bookingId)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Cannot Check In — Payment Not Verified",
+                    "The student's payment must be VERIFIED before check-in. "
+                    + "Current payment status: " + getPaymentStatusLabel(bookingId)));
+            return;
+        }
+
         try {
             checkInOutService.checkIn(bookingId, staff.getId(), roomCondition, notes);
             refresh();
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Checked In", "Student checked in successfully."));
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "Checked In", "Student checked in successfully."));
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
         }
+    }
+
+    /** Returns true only if the booking has a VERIFIED payment */
+    public boolean isPaymentVerified(Long bookingId) {
+        Optional<Payment> p = paymentService.getPaymentByBooking(bookingId);
+        return p.isPresent() && p.get().getStatus() == PaymentStatus.VERIFIED;
+    }
+
+    /** Returns the human-readable payment status for a booking */
+    public String getPaymentStatusLabel(Long bookingId) {
+        Optional<Payment> p = paymentService.getPaymentByBooking(bookingId);
+        if (p.isEmpty()) return "NOT PAID";
+        return p.get().getStatus().name();
     }
 
     public void checkOut(Long bookingId) {
@@ -105,6 +135,14 @@ public class StaffBookingBean implements Serializable {
         HttpSession session = (HttpSession)
             FacesContext.getCurrentInstance().getExternalContext().getSession(false);
         return session != null ? (User) session.getAttribute("loggedInUser") : null;
+    }
+
+    /** Returns only APPROVED bookings not yet checked in — for the check-in table */
+    public List<Booking> getPendingCheckInBookings() {
+        if (allBookings == null) return java.util.Collections.emptyList();
+        return allBookings.stream()
+            .filter(b -> b.getStatus() == BookingStatus.APPROVED)
+            .toList();
     }
 
     public List<Booking> getPendingBookings() { return pendingBookings; }

@@ -34,6 +34,11 @@ public class RoomBrowseBean implements Serializable {
         }
     }
 
+    public void resetFilter() {
+        selectedType = null;
+        rooms = roomService.getAvailableRooms();
+    }
+
     public void selectRoom(Room room) {
         this.selectedRoom = room;
     }

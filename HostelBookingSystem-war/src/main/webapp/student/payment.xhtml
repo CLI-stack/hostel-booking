@@ -11,6 +11,8 @@
             <p:messages id="msgs" showDetail="true" closable="true"/>
 
             <p:panel header="Make Payment">
+
+                <!-- Step 1: Select Booking -->
                 <p:panel header="Step 1: Select Approved Booking" styleClass="step-panel">
                     <p:dataTable value="#{paymentBean.approvedBookings}" var="b"
                                  emptyMessage="No approved bookings pending payment.">
@@ -20,54 +22,119 @@
                         <p:column headerText="Amount">
                             <h:outputText value="RM #{b.room.pricePerSemester}"/>
                         </p:column>
+                        <p:column headerText="Payment Status">
+                            <h:panelGroup>
+                                <h:outputText value="NOT PAID"
+                                              rendered="#{paymentBean.getPaymentForBooking(b.id).isEmpty()}"
+                                              style="color:#dc2626; font-weight:600"/>
+                                <p:tag value="#{paymentBean.getPaymentForBooking(b.id).get().status.name()}"
+                                       rendered="#{!paymentBean.getPaymentForBooking(b.id).isEmpty()}"
+                                       severity="#{paymentBean.getPaymentForBooking(b.id).get().status.name() == 'VERIFIED' ? 'success' :
+                                                  paymentBean.getPaymentForBooking(b.id).get().status.name() == 'FAILED' ? 'danger' : 'warning'}"/>
+                            </h:panelGroup>
+                        </p:column>
                         <p:column headerText="Action">
                             <p:commandButton value="Select" icon="fas fa-check"
                                              styleClass="p-button-success p-button-sm"
                                              update="paymentForm"
                                              process="@form">
-                                <f:setPropertyActionListener target="#{paymentBean.selectedBookingId}" value="#{b.id}"/>
+                                <f:setPropertyActionListener
+                                    target="#{paymentBean.selectedBookingId}" value="#{b.id}"/>
                             </p:commandButton>
                         </p:column>
                     </p:dataTable>
                 </p:panel>
 
+                <!-- Step 2: Choose Method -->
                 <p:panel header="Step 2: Choose Payment Method" styleClass="step-panel"
                          rendered="#{paymentBean.selectedBookingId != null}">
                     <div class="field">
                         <p:outputLabel for="method" value="Payment Method:"/>
-                        <p:selectOneMenu id="method" value="#{paymentBean.paymentMethod}" style="width:200px">
+                        <p:selectOneMenu id="method" value="#{paymentBean.paymentMethod}"
+                                         style="width:220px">
                             <f:selectItem itemLabel="FPX (Online Banking)" itemValue="FPX"/>
-                            <f:selectItem itemLabel="Credit Card" itemValue="CREDIT_CARD"/>
-                            <f:selectItem itemLabel="Debit Card" itemValue="DEBIT_CARD"/>
+                            <f:selectItem itemLabel="Credit Card"          itemValue="CREDIT_CARD"/>
+                            <f:selectItem itemLabel="Debit Card"           itemValue="DEBIT_CARD"/>
                         </p:selectOneMenu>
                     </div>
                     <p:commandButton value="Initiate Payment" icon="fas fa-paper-plane"
                                      action="#{paymentBean.initiatePayment}"
-                                     update="paymentForm" process="@form"/>
+                                     update="paymentForm" process="@form"
+                                     styleClass="p-button-primary"/>
                 </p:panel>
 
-                <p:panel header="Step 3: Verify Payment" styleClass="step-panel"
+                <!-- Step 3: Verify via JAX-WS Web Service -->
+                <p:panel header="Step 3: Verify Payment via Web Service" styleClass="step-panel"
                          rendered="#{paymentBean.currentPayment != null}">
+
                     <p:panelGrid columns="2" styleClass="details-grid">
                         <h:outputLabel value="Transaction ID:"/>
-                        <h:outputText value="#{paymentBean.currentPayment.transactionId}" styleClass="mono"/>
+                        <h:outputText value="#{paymentBean.currentPayment.transactionId}"
+                                      styleClass="mono"/>
                         <h:outputLabel value="Amount:"/>
                         <h:outputText value="RM #{paymentBean.currentPayment.amount}"/>
                         <h:outputLabel value="Method:"/>
                         <h:outputText value="#{paymentBean.currentPayment.paymentMethod}"/>
                         <h:outputLabel value="Status:"/>
-                        <p:tag value="#{paymentBean.currentPayment.status}"
-                               severity="#{paymentBean.currentPayment.status == 'VERIFIED' ? 'success' :
-                                          paymentBean.currentPayment.status == 'FAILED' ? 'danger' : 'warning'}"/>
+                        <!-- Use .name() to safely compare enum in EL -->
+                        <p:tag value="#{paymentBean.currentPayment.status.name()}"
+                               severity="#{paymentBean.currentPayment.status.name() == 'VERIFIED' ? 'success' :
+                                          paymentBean.currentPayment.status.name() == 'FAILED'   ? 'danger'  : 'warning'}"/>
                     </p:panelGrid>
-                    <p:commandButton value="Verify Payment (via Web Service)" icon="fas fa-shield-alt"
+
+                    <!-- Verify button: only shown when status is PENDING -->
+                    <p:commandButton value="Verify Payment (via Web Service)"
+                                     icon="fas fa-shield-alt"
+                                     styleClass="p-button-success"
+                                     style="margin-top:12px"
+                                     rendered="#{paymentBean.currentPaymentPending}"
                                      action="#{paymentBean.verifyPayment(paymentBean.currentPayment.id)}"
                                      update="paymentForm"
-                                     rendered="#{paymentBean.currentPayment.status == 'PENDING'}"
-                                     styleClass="p-button-success"/>
+                                     process="@form"
+                                     oncomplete="handleVerifyResult(args)"/>
+
+                    <!-- Success confirmation shown after VERIFIED -->
+                    <div rendered="#{paymentBean.currentPaymentVerified}"
+                         style="margin-top:16px; padding:14px; background:#dcfce7;
+                                border:1px solid #4ade80; border-radius:8px; color:#14532d;">
+                        <i class="fas fa-check-circle"/> &#160;
+                        <strong>Payment Verified!</strong>
+                        Payment has been successfully verified via the JAX-WS Payment Web Service.
+                        You may now check in when staff processes your booking.
+                    </div>
                 </p:panel>
             </p:panel>
         </h:form>
+
+        <!-- Verification result dialog -->
+        <p:dialog id="verifyResultDialog" widgetVar="verifyResultDialog"
+                  header="Verification Result" modal="true" resizable="false" width="380">
+            <div id="verifyResultBody" style="text-align:center; padding:12px">
+                <!-- content set by JS -->
+            </div>
+            <p:commandButton value="OK" icon="fas fa-check"
+                             onclick="PF('verifyResultDialog').hide(); return false;"
+                             type="button" styleClass="p-button-success"
+                             style="margin-top:12px"/>
+        </p:dialog>
+
+        <h:outputScript>
+            function handleVerifyResult(args) {
+                if (args &amp;&amp; args.verifySuccess === true) {
+                    document.getElementById('verifyResultBody').innerHTML =
+                        '&lt;i class="fas fa-check-circle" style="font-size:2.5rem;color:#16a34a"&gt;&lt;/i&gt;' +
+                        '&lt;h3 style="margin:12px 0 8px"&gt;Payment Verified!&lt;/h3&gt;' +
+                        '&lt;p style="color:#475569"&gt;Your payment has been verified by the Payment Web Service. ' +
+                        'Your booking is now confirmed.&lt;/p&gt;';
+                } else if (args &amp;&amp; args.verifySuccess === false) {
+                    document.getElementById('verifyResultBody').innerHTML =
+                        '&lt;i class="fas fa-times-circle" style="font-size:2.5rem;color:#dc2626"&gt;&lt;/i&gt;' +
+                        '&lt;h3 style="margin:12px 0 8px"&gt;Payment Failed&lt;/h3&gt;' +
+                        '&lt;p style="color:#475569"&gt;Verification failed. Please try again or contact support.&lt;/p&gt;';
+                }
+                PF('verifyResultDialog').show();
+            }
+        </h:outputScript>
     </ui:define>
 </ui:composition>
 </html>

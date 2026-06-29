@@ -10,7 +10,7 @@
         <h:form id="roomForm">
             <p:messages id="msgs" showDetail="true" closable="true"/>
 
-            <!-- Filter Panel -->
+            <!-- Filter Panel (restored) -->
             <p:panel header="Filter Rooms" toggleable="true" collapsed="false">
                 <div class="filter-row">
                     <p:outputLabel for="roomType" value="Room Type:"/>
@@ -23,6 +23,9 @@
                     <p:commandButton value="Filter" icon="fas fa-filter"
                                      action="#{roomBrowseBean.filterByType}"
                                      update="roomForm" styleClass="filter-btn"/>
+                    <p:commandButton value="Reset" icon="fas fa-undo"
+                                     action="#{roomBrowseBean.resetFilter}"
+                                     update="roomForm" styleClass="p-button-secondary filter-btn"/>
                 </div>
             </p:panel>
 
@@ -43,21 +46,25 @@
                             <p><i class="fas fa-bed"></i> Type: #{room.type}</p>
                             <p><i class="fas fa-money-bill"></i> RM #{room.pricePerSemester}/semester</p>
                             <p>
-                                <p:tag value="WiFi" severity="success" rendered="#{room.hasWifi}" icon="fas fa-wifi"/>
-                                <p:tag value="AC" severity="info" rendered="#{room.hasAc}" icon="fas fa-snowflake" style="margin-left:5px"/>
+                                <p:tag value="WiFi" severity="success"
+                                       rendered="#{room.hasWifi}" icon="fas fa-wifi"/>
+                                <p:tag value="AC" severity="info"
+                                       rendered="#{room.hasAc}" icon="fas fa-snowflake"
+                                       style="margin-left:5px"/>
                             </p>
                         </div>
-                        <p:tag value="AVAILABLE" styleClass="badge-available room-status"/>
+                        <span class="badge badge-available room-status">AVAILABLE</span>
 
-                        <!-- Book button — triggers confirmation dialog -->
+                        <!-- Book button — result handled by JS callback (single popup) -->
                         <p:commandButton value="Book This Room" icon="fas fa-calendar-plus"
                                          styleClass="book-btn"
                                          rendered="#{room.status == 'AVAILABLE'}"
                                          action="#{bookingBean.submitBooking}"
-                                         update=":roomForm:msgs :roomForm:bookingConfirmDialog"
+                                         update=":roomForm:msgs"
                                          process="@form"
-                                         oncomplete="if(!args.validationFailed) PF('bookingConfirmDialog').show()">
-                            <f:setPropertyActionListener target="#{bookingBean.selectedRoomId}" value="#{room.id}"/>
+                                         oncomplete="handleBookingResult(args, '#{room.roomNumber}')">
+                            <f:setPropertyActionListener
+                                target="#{bookingBean.selectedRoomId}" value="#{room.id}"/>
                         </p:commandButton>
                         <p:commandButton value="Unavailable" icon="fas fa-ban"
                                          disabled="true"
@@ -66,40 +73,104 @@
                 </p:panel>
             </p:dataGrid>
 
-            <!-- Booking Confirmation Dialog -->
-            <p:dialog id="bookingConfirmDialog" widgetVar="bookingConfirmDialog"
+            <!-- SUCCESS popup: booking submitted -->
+            <p:dialog id="bookingSuccessDialog" widgetVar="bookingSuccessDialog"
                       header="Booking Request Submitted" modal="true"
-                      resizable="false" width="420" closable="true"
-                      styleClass="booking-confirm-dialog">
+                      resizable="false" width="400" styleClass="booking-confirm-dialog">
                 <div class="confirm-dialog-body">
                     <i class="fas fa-check-circle confirm-icon"></i>
                     <h3>Request Submitted Successfully!</h3>
-                    <p>Your booking request has been submitted and is currently
-                       <strong>pending staff approval</strong>.</p>
-
+                    <p>Your booking has been submitted and is awaiting
+                       <strong>staff approval</strong>.</p>
                     <div class="status-badge-demo">
                         <span class="badge badge-pending">
-                            <i class="fas fa-clock"></i> PENDING
+                            <i class="fas fa-clock"></i> PENDING APPROVAL
                         </span>
                     </div>
-
                     <p class="confirm-note">
-                        You will be notified once the booking is reviewed.
-                        Check <strong>My Bookings</strong> to track your request status.
+                        Check <strong>My Bookings</strong> to track your request.
+                        You will be notified once reviewed.
                     </p>
-
-                    <p:commandButton value="Go to My Bookings" icon="fas fa-list"
-                                     styleClass="p-button-success confirm-btn"
-                                     action="#{loginBean.logout}"
-                                     onclick="PF('bookingConfirmDialog').hide(); window.location='#{request.contextPath}/student/my-bookings.xhtml'; return false;"/>
+                    <a href="#{request.contextPath}/student/my-bookings.xhtml"
+                       class="ui-button ui-widget p-button-success confirm-btn"
+                       style="text-decoration:none; margin-right:8px">
+                        <i class="fas fa-list"></i> My Bookings
+                    </a>
                     <p:commandButton value="Continue Browsing" icon="fas fa-search"
                                      styleClass="p-button-secondary confirm-btn"
-                                     style="margin-left:8px"
-                                     onclick="PF('bookingConfirmDialog').hide(); return false;"
+                                     onclick="PF('bookingSuccessDialog').hide(); return false;"
                                      type="button"/>
                 </div>
             </p:dialog>
+
+            <!-- BLOCKED popup: already has approved booking -->
+            <p:dialog id="alreadyBookedDialog" widgetVar="alreadyBookedDialog"
+                      header="Booking Not Allowed" modal="true"
+                      resizable="false" width="400">
+                <div style="text-align:center; padding:16px">
+                    <i class="fas fa-exclamation-triangle"
+                       style="font-size:2.5rem; color:#d97706; margin-bottom:12px; display:block"></i>
+                    <h3 style="margin-bottom:8px">You Already Have an Approved Booking</h3>
+                    <p style="color:#475569; margin-bottom:16px">
+                        You currently have a room booking that has been
+                        <strong style="color:#dc2626">Approved</strong>.
+                        You cannot submit another booking while one is active.
+                        Please cancel your existing booking first if you wish to book a different room.
+                    </p>
+                    <a href="#{request.contextPath}/student/my-bookings.xhtml"
+                       class="ui-button ui-widget p-button-warning"
+                       style="text-decoration:none; margin-right:8px">
+                        <i class="fas fa-list"></i> View My Bookings
+                    </a>
+                    <p:commandButton value="Close" icon="fas fa-times"
+                                     styleClass="p-button-secondary"
+                                     onclick="PF('alreadyBookedDialog').hide(); return false;"
+                                     type="button"/>
+                </div>
+            </p:dialog>
+
+            <!-- ERROR popup: period closed / other error -->
+            <p:dialog id="bookingErrorDialog" widgetVar="bookingErrorDialog"
+                      header="Booking Failed" modal="true"
+                      resizable="false" width="380">
+                <div style="text-align:center; padding:16px">
+                    <i class="fas fa-times-circle"
+                       style="font-size:2.5rem; color:#dc2626; margin-bottom:12px; display:block"></i>
+                    <h3 id="bookingErrorTitle" style="margin-bottom:8px">Booking Failed</h3>
+                    <p id="bookingErrorMsg" style="color:#475569"></p>
+                    <p:commandButton value="OK" icon="fas fa-check"
+                                     styleClass="p-button-secondary"
+                                     onclick="PF('bookingErrorDialog').hide(); return false;"
+                                     type="button" style="margin-top:12px"/>
+                </div>
+            </p:dialog>
         </h:form>
+
+        <h:outputScript>
+            /**
+             * Single callback handler — shows exactly ONE popup based on the server result.
+             * bookingResult: SUCCESS | ALREADY_APPROVED | ALREADY_ACTIVE | PERIOD_CLOSED | ERROR
+             */
+            function handleBookingResult(args, roomNumber) {
+                if (!args) return;
+                var result = args.bookingResult;
+                if (result === 'SUCCESS') {
+                    PF('bookingSuccessDialog').show();
+                } else if (result === 'ALREADY_APPROVED' || result === 'ALREADY_ACTIVE') {
+                    PF('alreadyBookedDialog').show();
+                } else if (result === 'PERIOD_CLOSED') {
+                    document.getElementById('bookingErrorTitle').textContent = 'Registration Closed';
+                    document.getElementById('bookingErrorMsg').textContent =
+                        'Booking is not open. There is no active registration period at this time.';
+                    PF('bookingErrorDialog').show();
+                } else if (result === 'ERROR') {
+                    document.getElementById('bookingErrorTitle').textContent = 'Booking Failed';
+                    document.getElementById('bookingErrorMsg').textContent =
+                        args.errorMsg || 'An unexpected error occurred. Please try again.';
+                    PF('bookingErrorDialog').show();
+                }
+            }
+        </h:outputScript>
     </ui:define>
 </ui:composition>
 </html>

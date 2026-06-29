@@ -30,46 +30,84 @@
                                          styleClass="p-button-warning p-button-sm"
                                          oncomplete="PF('checkOutDialog').show()"
                                          update="checkForm">
-                            <f:setPropertyActionListener target="#{staffBookingBean.selectedBooking}"
-                                                         value="#{c.booking}"/>
+                            <f:setPropertyActionListener
+                                target="#{staffBookingBean.selectedBooking}" value="#{c.booking}"/>
                         </p:commandButton>
                     </p:column>
                 </p:dataTable>
             </p:panel>
 
-            <!-- Approved Bookings (Pending Check In) -->
+            <!-- Approved Bookings — Pending Check In (with Payment Status) -->
             <p:panel header="Approved Bookings — Pending Check In" style="margin-top:20px">
-                <p:dataTable value="#{staffBookingBean.allBookings}" var="b"
+                <p:dataTable value="#{staffBookingBean.pendingCheckInBookings}" var="b"
                              rows="10" paginator="true"
                              emptyMessage="No approved bookings pending check-in.">
-                    <f:facet name="header">Approved bookings ready for check-in</f:facet>
+
                     <p:column headerText="Student">
-                        <h:outputText value="#{b.student.fullName}"
-                                      rendered="#{b.status == 'APPROVED'}"/>
+                        <h:outputText value="#{b.student.fullName}"/>
+                        <br/>
+                        <small style="color:#64748b">
+                            <h:outputText value="#{b.student.matricNumber}"/>
+                        </small>
                     </p:column>
+
                     <p:column headerText="Room">
-                        <h:outputText value="#{b.room.roomNumber}"
-                                      rendered="#{b.status == 'APPROVED'}"/>
+                        <h:outputText value="#{b.room.roomNumber} | Block #{b.room.block}"/>
+                        <br/>
+                        <small style="color:#64748b">
+                            RM <h:outputText value="#{b.room.pricePerSemester}"/>
+                        </small>
                     </p:column>
-                    <p:column headerText="Status">
-                        <p:tag value="#{b.status}"
-                               rendered="#{b.status == 'APPROVED'}"
-                               severity="success"/>
+
+                    <p:column headerText="Booking Status">
+                        <span class="badge badge-booked">APPROVED</span>
                     </p:column>
+
+                    <!-- Payment Status column — critical for check-in enforcement -->
+                    <p:column headerText="Payment Status">
+                        <h:panelGroup>
+                            <!-- VERIFIED — green, check-in allowed -->
+                            <p:tag value="VERIFIED" severity="success"
+                                   icon="fas fa-check-circle"
+                                   rendered="#{staffBookingBean.isPaymentVerified(b.id)}"/>
+                            <!-- NOT PAID / PENDING / FAILED — red, blocks check-in -->
+                            <h:panelGroup rendered="#{!staffBookingBean.isPaymentVerified(b.id)}">
+                                <p:tag value="#{staffBookingBean.getPaymentStatusLabel(b.id)}"
+                                       severity="danger"
+                                       icon="fas fa-times-circle"/>
+                                <div style="font-size:0.75rem; color:#dc2626; margin-top:4px">
+                                    <i class="fas fa-lock"></i>
+                                    Check-in blocked until payment verified
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </p:column>
+
                     <p:column headerText="Action">
+                        <!-- Check In button — ENABLED only if payment is VERIFIED -->
                         <p:commandButton value="Check In" icon="fas fa-sign-in-alt"
                                          styleClass="p-button-success p-button-sm"
-                                         rendered="#{b.status == 'APPROVED'}"
+                                         rendered="#{staffBookingBean.isPaymentVerified(b.id)}"
                                          oncomplete="PF('checkInDialog').show()"
                                          update="checkForm">
-                            <f:setPropertyActionListener target="#{staffBookingBean.selectedBooking}" value="#{b}"/>
+                            <f:setPropertyActionListener
+                                target="#{staffBookingBean.selectedBooking}" value="#{b}"/>
                         </p:commandButton>
+
+                        <!-- Blocked indicator — shown when payment is NOT verified -->
+                        <p:commandButton value="Cannot Check In" icon="fas fa-lock"
+                                         styleClass="p-button-danger p-button-sm"
+                                         rendered="#{!staffBookingBean.isPaymentVerified(b.id)}"
+                                         disabled="true"
+                                         title="Payment must be verified before check-in"/>
                     </p:column>
                 </p:dataTable>
             </p:panel>
 
             <!-- Check In Dialog -->
-            <p:dialog widgetVar="checkInDialog" header="Check In Student" modal="true" resizable="false">
+            <p:dialog widgetVar="checkInDialog" header="Check In Student"
+                      modal="true" resizable="false" width="450">
+                <p:messages showDetail="true"/>
                 <div class="field">
                     <p:outputLabel value="Room Condition:"/>
                     <p:inputText value="#{staffBookingBean.roomCondition}"
@@ -77,17 +115,23 @@
                 </div>
                 <div class="field">
                     <p:outputLabel value="Notes:"/>
-                    <p:inputTextarea value="#{staffBookingBean.notes}" rows="3" styleClass="full-width"/>
+                    <p:inputTextarea value="#{staffBookingBean.notes}"
+                                     rows="3" styleClass="full-width"/>
                 </div>
                 <p:commandButton value="Confirm Check In" icon="fas fa-check"
                                  styleClass="p-button-success"
                                  action="#{staffBookingBean.checkIn(staffBookingBean.selectedBooking.id)}"
                                  update="checkForm"
-                                 oncomplete="PF('checkInDialog').hide()"/>
+                                 oncomplete="if(!args.validationFailed) PF('checkInDialog').hide()"/>
+                <p:commandButton value="Cancel" icon="fas fa-times"
+                                 styleClass="p-button-secondary" style="margin-left:8px"
+                                 onclick="PF('checkInDialog').hide(); return false;"
+                                 type="button"/>
             </p:dialog>
 
             <!-- Check Out Dialog -->
-            <p:dialog widgetVar="checkOutDialog" header="Check Out Student" modal="true" resizable="false">
+            <p:dialog widgetVar="checkOutDialog" header="Check Out Student"
+                      modal="true" resizable="false" width="450">
                 <div class="field">
                     <p:outputLabel value="Room Condition on Checkout:"/>
                     <p:inputText value="#{staffBookingBean.roomCondition}"
@@ -95,13 +139,18 @@
                 </div>
                 <div class="field">
                     <p:outputLabel value="Notes:"/>
-                    <p:inputTextarea value="#{staffBookingBean.notes}" rows="3" styleClass="full-width"/>
+                    <p:inputTextarea value="#{staffBookingBean.notes}"
+                                     rows="3" styleClass="full-width"/>
                 </div>
                 <p:commandButton value="Confirm Check Out" icon="fas fa-check"
                                  styleClass="p-button-warning"
                                  action="#{staffBookingBean.checkOut(staffBookingBean.selectedBooking.id)}"
                                  update="checkForm"
-                                 oncomplete="PF('checkOutDialog').hide()"/>
+                                 oncomplete="if(!args.validationFailed) PF('checkOutDialog').hide()"/>
+                <p:commandButton value="Cancel" icon="fas fa-times"
+                                 styleClass="p-button-secondary" style="margin-left:8px"
+                                 onclick="PF('checkOutDialog').hide(); return false;"
+                                 type="button"/>
             </p:dialog>
         </h:form>
     </ui:define>
