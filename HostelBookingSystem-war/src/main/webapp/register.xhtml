@@ -20,7 +20,7 @@
                 <p:messages id="msgs" showDetail="true" closable="true"/>
 
                 <div class="field">
-                    <p:outputLabel for="fullName" value="Full Name *"/>
+                    <p:outputLabel for="fullName" indicateRequired="false">Full Name <span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="fullName" value="#{registerBean.fullName}"
                                  required="true" styleClass="full-width"
                                  placeholder="Full name as per IC"/>
@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="field">
-                    <p:outputLabel for="matric" value="Matric Number *"/>
+                    <p:outputLabel for="matric" indicateRequired="false">Matric Number <span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="matric" value="#{registerBean.matricNumber}"
                                  required="true" styleClass="full-width"
                                  placeholder="e.g. 227670"/>
@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="field">
-                    <p:outputLabel for="email" value="Email Address *"/>
+                    <p:outputLabel for="email" indicateRequired="false">Email Address <span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="email" value="#{registerBean.email}"
                                  required="true" styleClass="full-width"
                                  placeholder="Must end with @student.upm.edu.my"/>
@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="field">
-                    <p:outputLabel for="username" value="Username *"/>
+                    <p:outputLabel for="username" indicateRequired="false">Username <span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="username" value="#{registerBean.username}"
                                  required="true" styleClass="full-width"
                                  placeholder="Min 3 characters"/>
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="field">
-                    <p:outputLabel for="password" value="Password *"/>
+                    <p:outputLabel for="password" indicateRequired="false">Password <span class="required-asterisk">*</span></p:outputLabel>
                     <p:password id="password" value="#{registerBean.password}"
                                 required="true" styleClass="full-width"
                                 toggleMask="true" feedback="true"
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="field">
-                    <p:outputLabel for="confirmPassword" value="Confirm Password *"/>
+                    <p:outputLabel for="confirmPassword" indicateRequired="false">Confirm Password <span class="required-asterisk">*</span></p:outputLabel>
                     <p:password id="confirmPassword" value="#{registerBean.confirmPassword}"
                                 required="true" styleClass="full-width"
                                 toggleMask="true" feedback="false"/>
