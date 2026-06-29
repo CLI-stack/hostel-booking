@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Browse Available Rooms</ui:define>
+    <ui:define name="content">
+        <h:form id="roomForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Filter Panel -->
+            <p:panel header="Filter Rooms" toggleable="true" collapsed="false">
+                <div class="filter-row">
+                    <p:outputLabel for="roomType" value="Room Type:"/>
+                    <p:selectOneMenu id="roomType" value="#{roomBrowseBean.selectedType}"
+                                     style="width:200px">
+                        <f:selectItem itemLabel="All Types" itemValue=""/>
+                        <f:selectItems value="#{roomBrowseBean.roomTypes}" var="t"
+                                       itemLabel="#{t}" itemValue="#{t}"/>
+                    </p:selectOneMenu>
+                    <p:commandButton value="Filter" icon="fas fa-filter"
+                                     action="#{roomBrowseBean.filterByType}"
+                                     update="roomForm" styleClass="filter-btn"/>
+                </div>
+            </p:panel>
+
+            <!-- Room Cards -->
+            <p:dataGrid value="#{roomBrowseBean.rooms}" var="room"
+                        columns="3" rows="9" paginator="true"
+                        emptyMessage="No available rooms found."
+                        style="margin-top:20px">
+                <p:panel styleClass="room-card">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <div class="room-header">
+                            <i class="fas fa-door-open room-icon"></i>
+                            <h3>Room #{room.roomNumber}</h3>
+                        </div>
+                        <div class="room-details">
+                            <p><i class="fas fa-building"></i> Block #{room.block} | Floor #{room.floor}</p>
+                            <p><i class="fas fa-users"></i> Capacity: #{room.capacity} person(s)</p>
+                            <p><i class="fas fa-bed"></i> Type: #{room.type}</p>
+                            <p><i class="fas fa-money-bill"></i> RM #{room.pricePerSemester}/semester</p>
+                            <p>
+                                <p:tag value="WiFi" severity="success" rendered="#{room.hasWifi}" icon="fas fa-wifi"/>
+                                <p:tag value="AC" severity="info" rendered="#{room.hasAc}" icon="fas fa-snowflake" style="margin-left:5px"/>
+                            </p>
+                        </div>
+                        <p:tag value="AVAILABLE" styleClass="badge-available room-status"/>
+
+                        <!-- Book button — triggers confirmation dialog -->
+                        <p:commandButton value="Book This Room" icon="fas fa-calendar-plus"
+                                         styleClass="book-btn"
+                                         rendered="#{room.status == 'AVAILABLE'}"
+                                         action="#{bookingBean.submitBooking}"
+                                         update=":roomForm:msgs :roomForm:bookingConfirmDialog"
+                                         process="@form"
+                                         oncomplete="if(!args.validationFailed) PF('bookingConfirmDialog').show()">
+                            <f:setPropertyActionListener target="#{bookingBean.selectedRoomId}" value="#{room.id}"/>
+                        </p:commandButton>
+                        <p:commandButton value="Unavailable" icon="fas fa-ban"
+                                         disabled="true"
+                                         rendered="#{room.status != 'AVAILABLE'}"/>
+                    </h:panelGrid>
+                </p:panel>
+            </p:dataGrid>
+
+            <!-- Booking Confirmation Dialog -->
+            <p:dialog id="bookingConfirmDialog" widgetVar="bookingConfirmDialog"
+                      header="Booking Request Submitted" modal="true"
+                      resizable="false" width="420" closable="true"
+                      styleClass="booking-confirm-dialog">
+                <div class="confirm-dialog-body">
+                    <i class="fas fa-check-circle confirm-icon"></i>
+                    <h3>Request Submitted Successfully!</h3>
+                    <p>Your booking request has been submitted and is currently
+                       <strong>pending staff approval</strong>.</p>
+
+                    <div class="status-badge-demo">
+                        <span class="badge badge-pending">
+                            <i class="fas fa-clock"></i> PENDING
+                        </span>
+                    </div>
+
+                    <p class="confirm-note">
+                        You will be notified once the booking is reviewed.
+                        Check <strong>My Bookings</strong> to track your request status.
+                    </p>
+
+                    <p:commandButton value="Go to My Bookings" icon="fas fa-list"
+                                     styleClass="p-button-success confirm-btn"
+                                     action="#{loginBean.logout}"
+                                     onclick="PF('bookingConfirmDialog').hide(); window.location='#{request.contextPath}/student/my-bookings.xhtml'; return false;"/>
+                    <p:commandButton value="Continue Browsing" icon="fas fa-search"
+                                     styleClass="p-button-secondary confirm-btn"
+                                     style="margin-left:8px"
+                                     onclick="PF('bookingConfirmDialog').hide(); return false;"
+                                     type="button"/>
+                </div>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

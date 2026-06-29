@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">User Management</ui:define>
+    <ui:define name="content">
+
+        <h:form id="userMgmtForm">
+            <p:messages id="userMsgs" showDetail="true" closable="true"/>
+
+            <!-- Create New User -->
+            <p:panel header="Create New User Account" toggleable="true">
+                <p:panelGrid columns="2" styleClass="form-grid">
+
+                    <p:outputLabel for="roleSelect" value="Role *"/>
+                    <p:selectOneMenu id="roleSelect"
+                                     value="#{adminCreateUserBean.selectedRole}"
+                                     required="true" style="width:220px">
+                        <f:selectItem itemLabel="Staff"   itemValue="STAFF"/>
+                        <f:selectItem itemLabel="Admin"   itemValue="ADMIN"/>
+                        <f:selectItem itemLabel="Student" itemValue="STUDENT"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Email Domain Rules"/>
+                    <div class="domain-hints">
+                        <small>Student: #{adminCreateUserBean.studentDomain}</small><br/>
+                        <small>Staff:   #{adminCreateUserBean.staffDomain}</small><br/>
+                        <small>Admin:   #{adminCreateUserBean.adminDomain}</small>
+                    </div>
+
+                    <p:outputLabel for="uFullName" value="Full Name *"/>
+                    <p:inputText id="uFullName"
+                                 value="#{adminCreateUserBean.fullName}"
+                                 required="true" styleClass="full-width"
+                                 placeholder="Full name"/>
+
+                    <p:outputLabel for="uEmail" value="Email *"/>
+                    <p:inputText id="uEmail"
+                                 value="#{adminCreateUserBean.email}"
+                                 required="true" styleClass="full-width"
+                                 placeholder="Must match role domain above"/>
+
+                    <p:outputLabel for="uUsername" value="Username *"/>
+                    <p:inputText id="uUsername"
+                                 value="#{adminCreateUserBean.username}"
+                                 required="true" styleClass="full-width"
+                                 placeholder="Min 3 characters"/>
+
+                    <p:outputLabel for="uPhone" value="Phone"/>
+                    <p:inputText id="uPhone"
+                                 value="#{adminCreateUserBean.phone}"
+                                 styleClass="full-width" placeholder="01x-xxxxxxxx"/>
+
+                    <p:outputLabel for="uMatric" value="Matric No."/>
+                    <p:inputText id="uMatric"
+                                 value="#{adminCreateUserBean.matricNumber}"
+                                 styleClass="full-width" placeholder="Students only"/>
+
+                    <p:outputLabel for="uPwd" value="Password *"/>
+                    <p:password id="uPwd"
+                                value="#{adminCreateUserBean.password}"
+                                required="true" toggleMask="true" feedback="true"
+                                styleClass="full-width" placeholder="Min 6 characters"/>
+
+                    <p:outputLabel for="uConfirmPwd" value="Confirm Password *"/>
+                    <p:password id="uConfirmPwd"
+                                value="#{adminCreateUserBean.confirmPassword}"
+                                required="true" toggleMask="true" feedback="false"
+                                styleClass="full-width"/>
+                </p:panelGrid>
+
+                <p:commandButton value="Create User" icon="fas fa-user-plus"
+                                 action="#{adminCreateUserBean.createUser}"
+                                 update="userMgmtForm"
+                                 process="userMgmtForm"
+                                 styleClass="p-button-success"
+                                 style="margin-top:12px"/>
+            </p:panel>
+
+            <!-- All Users List -->
+            <p:panel header="All System Users" style="margin-top:20px">
+                <p:dataTable value="#{adminCreateUserBean.allUsers}" var="u"
+                             rows="10" paginator="true"
+                             emptyMessage="No users found.">
+                    <p:column headerText="Full Name">
+                        <h:outputText value="#{u.fullName}"/>
+                    </p:column>
+                    <p:column headerText="Username">
+                        <h:outputText value="#{u.username}"/>
+                    </p:column>
+                    <p:column headerText="Email">
+                        <h:outputText value="#{u.email}"/>
+                    </p:column>
+                    <p:column headerText="Role">
+                        <p:tag value="#{u.role.name()}"
+                               severity="#{u.role.name() == 'ADMIN' ? 'danger' :
+                                          u.role.name() == 'STAFF' ? 'warning' : 'info'}"/>
+                    </p:column>
+                    <p:column headerText="Status">
+                        <p:tag value="#{u.active ? 'ACTIVE' : 'INACTIVE'}"
+                               severity="#{u.active ? 'success' : 'danger'}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+</html>

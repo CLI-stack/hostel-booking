@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Manage Rooms</ui:define>
+    <ui:define name="content">
+
+        <!-- FORM 1: Add New Room (isolated — validation only applies here) -->
+        <h:form id="addRoomForm">
+            <p:messages id="addMsgs" showDetail="true" closable="true"/>
+            <p:panel header="Add New Room" toggleable="true" collapsed="true">
+                <p:panelGrid columns="2" styleClass="form-grid">
+                    <p:outputLabel for="rn" value="Room Number *"/>
+                    <p:inputText id="rn" value="#{adminRoomBean.newRoom.roomNumber}"
+                                 required="true" requiredMessage="Room Number is required"
+                                 placeholder="e.g. A103"/>
+
+                    <p:outputLabel for="rt" value="Room Type *"/>
+                    <p:selectOneMenu id="rt" value="#{adminRoomBean.newRoom.type}" required="true"
+                                     requiredMessage="Room Type is required">
+                        <f:selectItem itemLabel="-- Select Type --" itemValue=""/>
+                        <f:selectItems value="#{adminRoomBean.roomTypes}" var="t"
+                                       itemLabel="#{t}" itemValue="#{t}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="cap" value="Capacity *"/>
+                    <p:inputText id="cap" value="#{adminRoomBean.newRoom.capacity}"
+                                 required="true" requiredMessage="Capacity is required"/>
+
+                    <p:outputLabel for="blk" value="Block"/>
+                    <p:inputText id="blk" value="#{adminRoomBean.newRoom.block}" placeholder="e.g. A"/>
+
+                    <p:outputLabel for="fl" value="Floor *"/>
+                    <p:inputText id="fl" value="#{adminRoomBean.newRoom.floor}"
+                                 required="true" requiredMessage="Floor is required"/>
+
+                    <p:outputLabel for="price" value="Price/Semester (RM) *"/>
+                    <p:inputText id="price" value="#{adminRoomBean.newRoom.pricePerSemester}"
+                                 required="true" requiredMessage="Price is required"/>
+
+                    <p:outputLabel value="Amenities"/>
+                    <h:panelGroup>
+                        <p:selectBooleanCheckbox value="#{adminRoomBean.newRoom.hasWifi}"/>
+                        <h:outputText value=" WiFi  "/>
+                        <p:selectBooleanCheckbox value="#{adminRoomBean.newRoom.hasAc}"/>
+                        <h:outputText value=" Air Conditioning"/>
+                    </h:panelGroup>
+
+                    <p:outputLabel for="desc" value="Description"/>
+                    <p:inputTextarea id="desc" value="#{adminRoomBean.newRoom.description}" rows="3"/>
+                </p:panelGrid>
+                <p:commandButton value="Add Room" icon="fas fa-plus"
+                                 action="#{adminRoomBean.createRoom}"
+                                 update="addRoomForm roomListForm"
+                                 process="addRoomForm"/>
+            </p:panel>
+        </h:form>
+
+        <!-- FORM 2: Room List + Edit Dialog (isolated — validation only applies here) -->
+        <h:form id="roomListForm">
+            <p:messages id="listMsgs" showDetail="true" closable="true"/>
+
+            <p:panel header="All Rooms" style="margin-top:20px">
+                <p:dataTable id="roomTable" value="#{adminRoomBean.rooms}" var="room"
+                             rows="10" paginator="true" filterable="true"
+                             emptyMessage="No rooms found.">
+                    <p:column headerText="Room No" sortBy="#{room.roomNumber}" filterBy="#{room.roomNumber}">
+                        <h:outputText value="#{room.roomNumber}"/>
+                    </p:column>
+                    <p:column headerText="Type" sortBy="#{room.type}">
+                        <h:outputText value="#{room.type}"/>
+                    </p:column>
+                    <p:column headerText="Block">
+                        <h:outputText value="#{room.block}"/>
+                    </p:column>
+                    <p:column headerText="Capacity">
+                        <h:outputText value="#{room.capacity}"/>
+                    </p:column>
+                    <p:column headerText="Price/Sem">
+                        <h:outputText value="RM #{room.pricePerSemester}"/>
+                    </p:column>
+                    <p:column headerText="Amenities">
+                        <p:tag value="WiFi" severity="success" rendered="#{room.hasWifi}"/>
+                        <p:tag value="AC" severity="info" rendered="#{room.hasAc}" style="margin-left:3px"/>
+                    </p:column>
+                    <p:column headerText="Status" sortBy="#{room.status}">
+                        <p:tag value="#{room.status}"
+                               severity="#{room.status == 'AVAILABLE' ? 'success' :
+                                          room.status == 'OCCUPIED' ? 'info' :
+                                          room.status == 'MAINTENANCE' ? 'danger' : 'warning'}"/>
+                    </p:column>
+                    <p:column headerText="Actions" style="width:80px">
+                        <p:commandButton icon="fas fa-edit" title="Edit Room"
+                                         styleClass="p-button-sm p-button-text"
+                                         update=":roomListForm:editDialog"
+                                         oncomplete="PF('editDialog').show()">
+                            <f:setPropertyActionListener
+                                target="#{adminRoomBean.selectedRoom}" value="#{room}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Edit Room Dialog — inside roomListForm so it shares the same form scope -->
+            <p:dialog id="editDialog" widgetVar="editDialog" header="Edit Room"
+                      modal="true" resizable="false" width="500" dynamic="true">
+                <h:panelGroup rendered="#{adminRoomBean.selectedRoom != null}">
+                    <p:panelGrid columns="2" styleClass="form-grid">
+                        <p:outputLabel for="editRoomNo" value="Room Number"/>
+                        <p:inputText id="editRoomNo"
+                                     value="#{adminRoomBean.selectedRoom.roomNumber}"/>
+
+                        <p:outputLabel for="editType" value="Type"/>
+                        <p:selectOneMenu id="editType"
+                                         value="#{adminRoomBean.selectedRoom.type}">
+                            <f:selectItems value="#{adminRoomBean.roomTypes}" var="t"
+                                           itemLabel="#{t}" itemValue="#{t}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="editStatus" value="Status"/>
+                        <p:selectOneMenu id="editStatus"
+                                         value="#{adminRoomBean.selectedRoom.status}">
+                            <f:selectItems value="#{adminRoomBean.roomStatuses}" var="s"
+                                           itemLabel="#{s}" itemValue="#{s}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="editPrice" value="Price/Semester (RM)"/>
+                        <p:inputText id="editPrice"
+                                     value="#{adminRoomBean.selectedRoom.pricePerSemester}"/>
+
+                        <p:outputLabel for="editDesc" value="Description"/>
+                        <p:inputTextarea id="editDesc"
+                                         value="#{adminRoomBean.selectedRoom.description}" rows="3"/>
+                    </p:panelGrid>
+
+                    <div style="margin-top:12px">
+                        <p:commandButton value="Save Changes" icon="fas fa-save"
+                                         action="#{adminRoomBean.updateRoom}"
+                                         update=":roomListForm"
+                                         process=":roomListForm:editDialog"
+                                         oncomplete="if (!args.validationFailed) PF('editDialog').hide()"/>
+                        <p:commandButton value="Cancel" icon="fas fa-times"
+                                         styleClass="p-button-secondary"
+                                         style="margin-left:8px"
+                                         onclick="PF('editDialog').hide(); return false;"
+                                         type="button"/>
+                    </div>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+</html>

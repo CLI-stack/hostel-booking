@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">All Bookings</ui:define>
+    <ui:define name="content">
+        <h:form id="adminBookingForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <p:panel header="Booking Management">
+                <p:dataTable value="#{staffBookingBean.allBookings}" var="b"
+                             rows="15" paginator="true" filterable="true" sortable="true"
+                             emptyMessage="No bookings found.">
+                    <p:column headerText="ID" sortBy="#{b.id}" style="width:60px">
+                        <h:outputText value="#{b.id}"/>
+                    </p:column>
+                    <p:column headerText="Student" filterBy="#{b.student.fullName}">
+                        <h:outputText value="#{b.student.fullName}"/>
+                        <br/>
+                        <small><h:outputText value="Matric: #{b.student.matricNumber}"/></small>
+                    </p:column>
+                    <p:column headerText="Room" filterBy="#{b.room.roomNumber}">
+                        <h:outputText value="#{b.room.roomNumber}"/>
+                        <br/>
+                        <small><h:outputText value="Block #{b.room.block} | #{b.room.type}"/></small>
+                    </p:column>
+                    <p:column headerText="Price">
+                        <h:outputText value="RM #{b.room.pricePerSemester}"/>
+                    </p:column>
+                    <p:column headerText="Status" sortBy="#{b.status}" filterBy="#{b.status}">
+                        <p:tag value="#{b.status}"
+                               styleClass="#{b.status == 'PENDING' ? 'badge badge-pending' : b.status == 'APPROVED' ? 'badge badge-booked' : b.status == 'CHECKED_IN' ? 'badge badge-checkedin' : b.status == 'REJECTED' ? 'badge badge-rejected' : b.status == 'CANCELLED' ? 'badge badge-cancelled' : 'badge badge-info'}"/>
+                    </p:column>
+                    <p:column headerText="Booking Date" sortBy="#{b.bookingDate}">
+                        <h:outputText value="#{b.bookingDate}">
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm" type="localDateTime"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Processed By">
+                        <h:outputText value="#{b.processedBy != null ? b.processedBy.fullName : '—'}"/>
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <p:commandButton value="Approve" icon="fas fa-check"
+                                         styleClass="p-button-success p-button-sm"
+                                         rendered="#{b.status == 'PENDING'}"
+                                         action="#{staffBookingBean.approveBooking(b.id)}"
+                                         update="adminBookingForm"
+                                         onclick="return confirm('Approve this booking?')"/>
+                        <p:commandButton value="Reject" icon="fas fa-times"
+                                         styleClass="p-button-danger p-button-sm"
+                                         rendered="#{b.status == 'PENDING'}"
+                                         action="#{staffBookingBean.rejectBooking(b.id)}"
+                                         update="adminBookingForm"
+                                         style="margin-left:3px"
+                                         onclick="return confirm('Reject this booking?')">
+                            <f:setPropertyActionListener target="#{staffBookingBean.rejectionReason}"
+                                                         value="Rejected by Admin"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

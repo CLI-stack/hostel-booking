@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Register - Hostel Room Booking System</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+<h:body styleClass="login-page">
+    <div class="login-container">
+        <div class="login-card" style="max-width:500px">
+            <div class="login-header">
+                <i class="fas fa-user-plus login-icon"></i>
+                <h2>Student Registration</h2>
+                <p>Universiti Putra Malaysia</p>
+            </div>
+            <h:form id="registerForm">
+                <p:messages id="msgs" showDetail="true" closable="true"/>
+
+                <div class="field">
+                    <p:outputLabel for="fullName" indicateRequired="false">Full Name <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:inputText id="fullName" value="#{registerBean.fullName}"
+                                 required="true" styleClass="full-width"
+                                 placeholder="Full name as per IC"/>
+                    <p:message for="fullName"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="matric" indicateRequired="false">Matric Number <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:inputText id="matric" value="#{registerBean.matricNumber}"
+                                 required="true" styleClass="full-width"
+                                 placeholder="e.g. 227670"/>
+                    <p:message for="matric"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="email" indicateRequired="false">Email Address <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:inputText id="email" value="#{registerBean.email}"
+                                 required="true" styleClass="full-width"
+                                 placeholder="Must end with @student.upm.edu.my"/>
+                    <p:message for="email"/>
+                    <small class="field-hint">
+                        Student email must end with @student.upm.edu.my
+                    </small>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="phone" value="Phone Number"/>
+                    <p:inputText id="phone" value="#{registerBean.phone}"
+                                 styleClass="full-width" placeholder="01x-xxxxxxxx"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="username" indicateRequired="false">Username <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:inputText id="username" value="#{registerBean.username}"
+                                 required="true" styleClass="full-width"
+                                 placeholder="Min 3 characters"/>
+                    <p:message for="username"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="password" indicateRequired="false">Password <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:password id="password" value="#{registerBean.password}"
+                                required="true" styleClass="full-width"
+                                toggleMask="true" feedback="true"
+                                placeholder="Min 6 characters"/>
+                    <p:message for="password"/>
+                </div>
+
+                <div class="field">
+                    <p:outputLabel for="confirmPassword" indicateRequired="false">Confirm Password <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:password id="confirmPassword" value="#{registerBean.confirmPassword}"
+                                required="true" styleClass="full-width"
+                                toggleMask="true" feedback="false"/>
+                    <p:message for="confirmPassword"/>
+                </div>
+
+                <div class="role-note">
+                    This registration is for Student accounts only.
+                    Admin and Staff accounts are created by the system administrator.
+                </div>
+
+                <p:commandButton value="Register" icon="fas fa-user-plus"
+                                 action="#{registerBean.register}"
+                                 styleClass="login-btn full-width"
+                                 update="registerForm"/>
+
+                <div class="login-footer">
+                    <p>Already have an account? <h:link value="Login here" outcome="login"/></p>
+                </div>
+            </h:form>
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</h:body>
+</html>

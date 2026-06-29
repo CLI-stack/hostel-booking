@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - Hostel Room Booking System</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</h:head>
+<h:body styleClass="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="logo-circle">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h1>Hostel Room Booking System</h1>
+                <span>Universiti Putra Malaysia</span>
+            </div>
+            <h:form id="loginForm">
+                <p:messages id="loginMsgs"
+                            showDetail="true"
+                            closable="true"/>
+
+                <!-- Username -->
+                <div class="field">
+                    <p:outputLabel for="username" indicateRequired="false">Username <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:inputText id="username"
+                                 value="#{loginBean.username}"
+                                 placeholder="Enter your username"
+                                 required="true"
+                                 requiredMessage="Username is required"
+                                 styleClass="full-width"/>
+                </div>
+
+                <!-- Password -->
+                <div class="field">
+                    <p:outputLabel for="password" indicateRequired="false">Password <span class="required-asterisk">*</span></p:outputLabel>
+                    <p:password id="password"
+                                value="#{loginBean.password}"
+                                placeholder="Enter your password"
+                                required="true"
+                                requiredMessage="Password is required"
+                                feedback="false"
+                                toggleMask="true"
+                                styleClass="full-width"/>
+                </div>
+
+                <!-- Login Button -->
+                <p:commandButton
+                        value="Login"
+                        icon="fas fa-sign-in-alt"
+                        action="#{loginBean.login}"
+                        update="loginForm"
+                        styleClass="login-btn full-width"/>
+
+                <div class="divider"></div>
+
+                <!-- Footer Links -->
+                <div class="login-footer">
+                    <h:link outcome="forgot-password"
+                            value="Forgot Password?"
+                            styleClass="forgot-link"/>
+                    <div class="register-text">
+                        Don't have an account?
+                        <h:link outcome="register"
+                                value="Create Account"/>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

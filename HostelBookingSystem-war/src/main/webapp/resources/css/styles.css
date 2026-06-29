@@ -1,0 +1,641 @@
+/* ============================================================
+   Hostel Room Booking System - Global Styles
+   ============================================================ */
+
+:root {
+    --primary:    #2563eb;
+    --secondary:  #1e40af;
+    --success:    #16a34a;
+    --warning:    #d97706;
+    --danger:     #dc2626;
+    --info:       #0891b2;
+    --light:      #f8fafc;
+    --dark:       #1e293b;
+    --rail-w:     64px;
+    --topbar-h:   60px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #eef2ff;
+    color: var(--dark);
+}
+
+/* ---- Layout ---- */
+.layout-wrapper { min-height: 100vh; }
+
+.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--topbar-h);
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-left i { font-size: 1.5rem; }
+.system-title { font-size: 1.1rem; font-weight: 600; }
+
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.user-info { font-size: 0.9rem; }
+.role-badge {
+    background: rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    margin-left: 6px;
+}
+
+.logout-btn {
+    background: #dc2626 !important;
+    border: 1px solid #b91c1c !important;
+    color: #ffffff !important;
+    font-size: 0.8rem !important;
+    height: 32px !important;                 
+    padding: 0px 12px !important;            
+    display: inline-flex !important;         
+    align-items: center !important;          
+    justify-content: center !important;
+    margin-left: 11px !important;
+    transition: background-color 0.2s ease;
+
+}
+.logout-btn:hover {
+    background: #b91c1c !important;           
+    border-color: #991b1b !important;
+}
+
+/* ---- Menu toggle (hamburger, mobile only) ---- */
+.menu-toggle {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-right: 16px;
+    cursor: pointer;
+}
+.menu-toggle i { font-size: 1.1rem; }
+.menu-toggle:hover { opacity: 0.85; }
+
+/* Sidebar backdrop, only relevant once the rail becomes an overlay (mobile) */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 998;
+}
+.sidebar-backdrop.sidebar-open { display: block; }
+
+.layout-container {
+    display: flex;
+    margin-top: var(--topbar-h);
+    min-height: calc(100vh - var(--topbar-h));
+}
+
+/* ---- Icon Rail Sidebar ---- */
+.sidebar-rail {
+    width: var(--rail-w);
+    background: var(--dark);
+    min-height: calc(100vh - var(--topbar-h));
+    padding: 16px 0;
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 999;
+}
+
+.rail-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 1.15rem;
+    position: relative;
+    transition: background 0.15s, color 0.15s;
+}
+
+.rail-icon:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+}
+
+/* Label tooltip, revealed on hover to the right of the icon */
+.rail-icon::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 56px;
+    top: 50%;
+    transform: translateY(-50%) translateX(-6px);
+    background: #1e293b;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, transform 0.15s;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.rail-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* ---- Main content area (single definition, blue-accent theme included) ---- */
+.main-content {
+    background: #ffffff;
+    border-top: 4px solid var(--primary);
+    border-radius: 0 0 8px 8px;
+    margin-left: var(--rail-w);
+    flex: 1;
+    padding: 24px;
+    max-width: calc(100vw - var(--rail-w));
+    box-shadow: 0 2px 12px rgba(37,99,235,0.08);
+}
+
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* ---- Login Page ---- */
+.login-page {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.login-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.login-header i { font-size: 3rem; color: var(--primary); margin-bottom: 12px; display: block; }
+
+.logo-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+}
+.logo-circle i { font-size: 1.8rem; color: var(--primary); margin: 0; display: inline; }
+
+.login-header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.login-header h2 { font-size: 1.4rem; color: var(--dark); margin-bottom: 4px; }
+.login-header p,
+.login-header span { color: #64748b; font-size: 0.9rem; }
+
+.login-btn {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    margin-top: 16px !important;
+    padding: 12px !important;
+    font-size: 1rem !important;
+    border-radius: 8px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.login-btn .ui-button-text {
+    flex: none !important;
+    text-align: center !important;
+    padding-left: 4px !important;
+}
+.login-btn .ui-icon {
+    position: static !important;
+    margin: 0 !important;
+}
+
+.divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 24px 0 16px;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.register-text { margin-top: 12px; opacity: 0.9; }
+
+.hint {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #0369a1;
+}
+
+/* ---- Fields ---- */
+.field { margin-bottom: 16px; }
+.field .ui-outputlabel { display: block; margin-bottom: 4px; font-weight: 500; }
+.full-width { width: 100% !important; }
+
+/* Username input: p:inputText renders a single <input>, so full-width
+   on the component works directly. */
+.field .full-width.ui-inputtext {
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+}
+
+/* Password field — aggressive override to guarantee it matches
+   the username field exactly, regardless of PrimeFaces' internal
+   markup or theme defaults that might otherwise win. */
+.field span[id$="password"],
+.field span.ui-password,
+.field .ui-password {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative !important;
+}
+
+.field span[id$="password"] input,
+.field span.ui-password input,
+.field .ui-password input,
+.field .ui-password > input.ui-inputfield {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 44px !important;
+    padding: 0 40px 0 14px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    font-size: 0.95rem !important;
+    margin: 0 !important;
+}
+
+.field .ui-password .ui-icon,
+.field span[id$="password"] .ui-icon {
+    position: absolute !important;
+    top: 50% !important;
+    right: 14px !important;
+    transform: translateY(-50%) !important;
+    margin-top: 0 !important;
+    left: auto !important;
+}
+
+/* ---- Stats Row ---- */
+.stats-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 160px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--primary);
+}
+
+.stat-icon { font-size: 2rem; }
+.stat-icon.blue   { color: var(--primary); }
+.stat-icon.green  { color: var(--success); }
+.stat-icon.orange { color: var(--warning); }
+.stat-icon.red    { color: var(--danger); }
+.stat-icon.purple { color: #7c3aed; }
+
+.stat-number { font-size: 1.8rem; font-weight: 700; display: block; line-height: 1; }
+.stat-label  { font-size: 0.8rem; color: #64748b; margin-top: 4px; display: block; }
+
+/* ---- Welcome Panel ---- */
+.welcome-panel,
+.welcome-panel.ui-panel {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    margin-bottom: 20px;
+}
+
+.welcome-panel h3 { font-size: 1.3rem; margin-bottom: 4px; }
+.welcome-panel p  { opacity: 0.85; }
+.welcome-panel .ui-panel-content { color: #fff !important; }
+
+/* ---- Room Cards ---- */
+.room-card {
+    border-radius: 12px !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 8px !important;
+}
+
+.room-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+}
+
+.room-header { text-align: center; padding: 12px 0; }
+.room-icon { font-size: 2.5rem; color: var(--primary); }
+.room-header h3 { margin-top: 8px; font-size: 1rem; }
+
+.room-details { padding: 8px 0; }
+.room-details p { font-size: 0.85rem; color: #475569; margin: 4px 0; }
+.room-details p i { width: 18px; color: var(--primary); }
+
+.room-status { margin: 8px 0; display: block; text-align: center; }
+.book-btn { width: 100% !important; margin-top: 8px !important; }
+
+/* ---- Action Buttons ---- */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ---- Filter Row ---- */
+.filter-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-btn { margin-left: 8px !important; }
+
+/* ---- Form Grid ---- */
+.form-grid .ui-panelgrid-cell { padding: 8px 12px; vertical-align: middle; }
+
+/* ---- Details Grid ---- */
+.details-grid .ui-panelgrid-cell {
+    padding: 6px 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* ---- Step Panel ---- */
+.step-panel { margin-bottom: 20px !important; }
+
+/* ---- Mono ---- */
+.mono { font-family: monospace; font-size: 0.85rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+
+/* ---- Status Badges (Yellow=Pending, Red=Booked) ---- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.badge-pending {
+    background: #fef08a;
+    color: #854d0e;
+    border: 1px solid #fbbf24;
+}
+
+.badge-booked {
+    background: #fecaca;
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+.badge-checkedin {
+    background: #bbf7d0;
+    color: #14532d;
+    border: 1px solid #4ade80;
+}
+
+.badge-rejected {
+    background: #fee2e2;
+    color: #7f1d1d;
+    border: 1px solid #ef4444;
+}
+
+.badge-cancelled {
+    background: #e2e8f0;
+    color: #475569;
+    border: 1px solid #94a3b8;
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1e3a8a;
+    border: 1px solid #93c5fd;
+}
+
+.badge-available {
+    background: #dcfce7;
+    color: #14532d;
+    border: 1px solid #4ade80;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ---- Global Loading Indicator ---- */
+.global-loading {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---- Booking Confirmation Dialog ---- */
+.booking-confirm-dialog .ui-dialog-content { padding: 24px; }
+
+.confirm-dialog-body {
+    text-align: center;
+    padding: 8px;
+}
+
+.confirm-icon {
+    font-size: 3.5rem;
+    color: #16a34a;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.confirm-dialog-body h3 {
+    font-size: 1.3rem;
+    color: var(--dark);
+    margin-bottom: 12px;
+}
+
+.confirm-dialog-body p {
+    color: #475569;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.status-badge-demo {
+    margin: 16px 0;
+}
+
+.confirm-note {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: #0369a1;
+    margin-bottom: 20px !important;
+}
+
+.confirm-btn { margin-top: 4px !important; }
+
+/* ---- Forgot Password Link ---- */
+.forgot-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+.forgot-link:hover { text-decoration: underline; }
+
+/* ---- Field Hint ---- */
+.field-hint {
+    color: #64748b;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    display: block;
+}
+
+/* ---- Role Note ---- */
+.role-note {
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: #92400e;
+    margin-bottom: 16px;
+}
+
+/* ---- Domain Hints ---- */
+.domain-hints {
+    background: #f0f9ff;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #0369a1;
+    font-size: 0.8rem;
+    line-height: 1.8;
+}
+
+/* ---- Topbar Profile Link ---- */
+.topbar-link {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    margin-right: 8px;
+}
+.topbar-link:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
+.required-asterisk {
+    color: var(--danger);
+    margin-left: 2px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .menu-toggle { display: flex; }
+
+    .sidebar-rail {
+        display: none;
+        box-shadow: 4px 0 12px rgba(0,0,0,0.2);
+    }
+    .sidebar-rail.sidebar-open { display: flex; }
+
+    .main-content {
+        margin-left: 0;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    .stats-row { flex-direction: column; }
+}

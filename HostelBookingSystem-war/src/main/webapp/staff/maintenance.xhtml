@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="pageTitle">Maintenance Requests</ui:define>
+    <ui:define name="content">
+        <h:form id="maintForm">
+            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+            <!-- Log New Request -->
+            <p:panel header="Log New Maintenance Request">
+                <div class="field">
+                    <p:outputLabel for="room" value="Select Room *"/>
+                    <p:selectOneMenu id="room" value="#{maintenanceBean.selectedRoomId}"
+                                     required="true" style="width:200px">
+                        <f:selectItem itemLabel="-- Select Room --" itemValue=""/>
+                        <f:selectItems value="#{maintenanceBean.allRooms}" var="r"
+                                       itemLabel="Room #{r.roomNumber} (#{r.status})"
+                                       itemValue="#{r.id}"/>
+                    </p:selectOneMenu>
+                    <p:message for="room"/>
+                </div>
+                <div class="field">
+                    <p:outputLabel for="cat" value="Category *"/>
+                    <p:selectOneMenu id="cat" value="#{maintenanceBean.category}"
+                                     required="true" style="width:200px">
+                        <f:selectItem itemLabel="-- Select Category --" itemValue=""/>
+                        <f:selectItem itemLabel="Plumbing" itemValue="PLUMBING"/>
+                        <f:selectItem itemLabel="Electrical" itemValue="ELECTRICAL"/>
+                        <f:selectItem itemLabel="Furniture" itemValue="FURNITURE"/>
+                        <f:selectItem itemLabel="Cleaning" itemValue="CLEANING"/>
+                        <f:selectItem itemLabel="Others" itemValue="OTHERS"/>
+                    </p:selectOneMenu>
+                </div>
+                <div class="field">
+                    <p:outputLabel for="issue" value="Issue Description *"/>
+                    <p:inputTextarea id="issue" value="#{maintenanceBean.issueDescription}"
+                                     required="true" rows="4" styleClass="full-width"
+                                     placeholder="Describe the issue in detail"/>
+                    <p:message for="issue"/>
+                </div>
+                <p:commandButton value="Log Request" icon="fas fa-wrench"
+                                 action="#{maintenanceBean.logRequest}"
+                                 update="maintForm" process="@form"/>
+            </p:panel>
+
+            <!-- All Requests -->
+            <p:panel header="All Maintenance Requests" style="margin-top:20px">
+                <p:dataTable value="#{maintenanceBean.allRequests}" var="m"
+                             rows="10" paginator="true" filterable="true"
+                             emptyMessage="No maintenance requests.">
+                    <p:column headerText="ID" style="width:50px">
+                        <h:outputText value="#{m.id}"/>
+                    </p:column>
+                    <p:column headerText="Room">
+                        <h:outputText value="#{m.room.roomNumber}"/>
+                    </p:column>
+                    <p:column headerText="Category">
+                        <h:outputText value="#{m.category}"/>
+                    </p:column>
+                    <p:column headerText="Issue">
+                        <h:outputText value="#{m.issueDescription}"/>
+                    </p:column>
+                    <p:column headerText="Status">
+                        <p:tag value="#{m.status}"
+                               severity="#{m.status == 'COMPLETED' ? 'success' :
+                                          m.status == 'PENDING' ? 'danger' : 'warning'}"/>
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <p:commandButton value="Update" icon="fas fa-edit"
+                                         styleClass="p-button-sm"
+                                         rendered="#{m.status != 'COMPLETED'}"
+                                         oncomplete="PF('updateDialog').show()"
+                                         update="maintForm">
+                            <f:setPropertyActionListener target="#{maintenanceBean.selectedRequest}" value="#{m}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Update Status Dialog -->
+            <p:dialog widgetVar="updateDialog" header="Update Maintenance Status" modal="true" resizable="false">
+                <div class="field">
+                    <p:outputLabel for="status" value="New Status:"/>
+                    <p:selectOneMenu id="status" value="#{maintenanceBean.newStatus}" style="width:200px">
+                        <f:selectItems value="#{maintenanceBean.maintenanceStatuses}" var="s"
+                                       itemLabel="#{s}" itemValue="#{s}"/>
+                    </p:selectOneMenu>
+                </div>
+                <div class="field">
+                    <p:outputLabel value="Staff Notes:"/>
+                    <p:inputTextarea value="#{maintenanceBean.staffNotes}" rows="3" styleClass="full-width"/>
+                </div>
+                <p:commandButton value="Update"
+                                 action="#{maintenanceBean.updateStatus(maintenanceBean.selectedRequest.id)}"
+                                 update="maintForm"
+                                 oncomplete="PF('updateDialog').hide()"/>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
