@@ -100,6 +100,33 @@ body {
 }
 .sidebar-backdrop.sidebar-open { display: block; }
 
+/* ---- Menu toggle (hamburger, mobile only) ---- */
+.menu-toggle {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-right: 16px;
+    cursor: pointer;
+}
+.menu-toggle i { font-size: 1.1rem; }
+.menu-toggle:hover { opacity: 0.85; }
+
+/* Sidebar backdrop, only relevant once the rail becomes an overlay (mobile) */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 998;
+}
+.sidebar-backdrop.sidebar-open { display: block; }
+
 .layout-container {
     display: flex;
     margin-top: var(--topbar-h);
