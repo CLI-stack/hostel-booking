@@ -295,31 +295,30 @@ body {
 }
 
 /* ============================================================
-   BLUE THEME — consistent background across all pages
+   BLUE THEME — subtle blue accent, layout preserved
    ============================================================ */
 
 body {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%) !important;
-    background-attachment: fixed !important;
-    min-height: 100vh;
+    background: #eef2ff;   /* soft blue-tinted background — no layout break */
 }
 
+/* Blue top border accent on main content for blue theme feel */
 .main-content {
-    background: rgba(255,255,255,0.97);
-    border-radius: 12px;
-    margin: 12px 12px 12px 0;
+    background: #ffffff;
+    border-top: 4px solid var(--primary);
+    border-radius: 0 0 8px 8px;
+    /* Preserve original margins so sidebar does NOT overlap */
+    margin-left: var(--sidebar-w);
+    flex: 1;
     padding: 24px;
-    min-height: calc(100vh - var(--topbar-h) - 24px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    max-width: calc(100vw - var(--sidebar-w));
+    box-shadow: 0 2px 12px rgba(37,99,235,0.08);
 }
 
 .layout-container {
-    background: transparent;
-}
-
-.sidebar {
-    background: rgba(15, 23, 42, 0.92) !important;
-    backdrop-filter: blur(8px);
+    display: flex;
+    margin-top: var(--topbar-h);
+    min-height: calc(100vh - var(--topbar-h));
 }
 
 /* ---- Status Badges (Yellow=Pending, Red=Booked) ---- */

@@ -19,6 +19,10 @@ public class AdminUserListBean implements Serializable {
 
     @PostConstruct
     public void init() {
+        refresh();
+    }
+
+    public void refresh() {
         allUsers = userDAO.findAll();
     }
 
