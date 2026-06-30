@@ -45,8 +45,9 @@
                     </p:column>
                     <p:column headerText="Status">
                         <p:tag value="#{c.status}"
-                               severity="#{c.status == 'RESOLVED' or c.status == 'CLOSED' ? 'success' :
-                                          c.status == 'OPEN' ? 'danger' : 'warning'}"/>
+                            severity="#{c.status == 'RESOLVED' ? 'success' :
+                                c.status == 'CLOSED' ? 'info' :
+                                c.status == 'IN_PROGRESS' ? 'warning' : 'danger'}"/>
                     </p:column>
                     <p:column headerText="Submitted">
                         <h:outputText value="#{c.createdAt}">

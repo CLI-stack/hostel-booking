@@ -24,9 +24,9 @@ public class ComplaintBean implements Serializable {
     private String subject;
     private String description;
     private Long selectedBookingId;
-    private Complaint selectedComplaint;
-    private String adminResponse;
-    private String newStatus;
+    // private Complaint selectedComplaint;
+    // private String adminResponse;
+    //private String newStatus;
 
     @PostConstruct
     public void init() {
@@ -58,19 +58,19 @@ public class ComplaintBean implements Serializable {
         }
     }
 
-    public void respondToComplaint() {
-        User user = getLoggedInUser();
-        if (user == null || selectedComplaint == null) return;
-        try {
-            ComplaintStatus status = ComplaintStatus.valueOf(newStatus);
-            complaintService.respondToComplaint(selectedComplaint.getId(), user.getId(), adminResponse, status);
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Response Saved", "Complaint updated."));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
-        }
-    }
+   // public void respondToComplaint() {
+     //   User user = getLoggedInUser();
+       // if (user == null || selectedComplaint == null) return;
+        //try {
+          //  ComplaintStatus status = ComplaintStatus.valueOf(newStatus);
+            //complaintService.respondToComplaint(selectedComplaint.getId(), user.getId(), adminResponse, status);
+            //FacesContext.getCurrentInstance().addMessage(null,
+              //  new FacesMessage(FacesMessage.SEVERITY_INFO, "Response Saved", "Complaint updated."));
+        //} catch (Exception e) {
+           // FacesContext.getCurrentInstance().addMessage(null,
+              //  new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
+      //  }
+   // }
 
     private User getLoggedInUser() {
         HttpSession session = (HttpSession)
@@ -85,11 +85,11 @@ public class ComplaintBean implements Serializable {
     public void setDescription(String description) { this.description = description; }
     public Long getSelectedBookingId() { return selectedBookingId; }
     public void setSelectedBookingId(Long selectedBookingId) { this.selectedBookingId = selectedBookingId; }
-    public Complaint getSelectedComplaint() { return selectedComplaint; }
-    public void setSelectedComplaint(Complaint selectedComplaint) { this.selectedComplaint = selectedComplaint; }
-    public String getAdminResponse() { return adminResponse; }
-    public void setAdminResponse(String adminResponse) { this.adminResponse = adminResponse; }
-    public String getNewStatus() { return newStatus; }
-    public void setNewStatus(String newStatus) { this.newStatus = newStatus; }
+    //public Complaint getSelectedComplaint() { return selectedComplaint; }
+   // public void setSelectedComplaint(Complaint selectedComplaint) { this.selectedComplaint = selectedComplaint; }
+    //public String getAdminResponse() { return adminResponse; }
+   // public void setAdminResponse(String adminResponse) { this.adminResponse = adminResponse; }
+   // public String getNewStatus() { return newStatus; }
+   // public void setNewStatus(String newStatus) { this.newStatus = newStatus; }
     public ComplaintStatus[] getComplaintStatuses() { return ComplaintStatus.values(); }
 }
