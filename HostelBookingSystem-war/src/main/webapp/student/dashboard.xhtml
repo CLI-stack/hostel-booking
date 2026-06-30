@@ -61,9 +61,35 @@
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Action">
+                        <!-- Make Payment: APPROVED + payment NOT yet verified -->
                         <p:button value="Make Payment" icon="fas fa-credit-card"
                                   outcome="/student/payment"
-                                  rendered="#{b.status == 'APPROVED'}"/>
+                                  styleClass="p-button-sm"
+                                  rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'MAKE_PAYMENT'}"/>
+
+                        <!-- Payment Done: APPROVED + payment VERIFIED — waiting for staff check-in -->
+                        <h:panelGroup rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'PAYMENT_DONE'}">
+                            <span style="color:#16a34a; font-weight:600; font-size:0.82rem">
+                                <i class="fas fa-check-circle"></i>
+                                Payment Done. Wait for Check-in.
+                            </span>
+                        </h:panelGroup>
+
+                        <!-- Checked In -->
+                        <h:panelGroup rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'CHECKED_IN'}">
+                            <span style="color:#2563eb; font-weight:600; font-size:0.82rem">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Checked In
+                            </span>
+                        </h:panelGroup>
+
+                        <!-- Checked Out -->
+                        <h:panelGroup rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'CHECKED_OUT'}">
+                            <span style="color:#64748b; font-size:0.82rem">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Checked Out
+                            </span>
+                        </h:panelGroup>
                     </p:column>
                 </p:dataTable>
             </p:panel>

@@ -36,12 +36,17 @@ public class PaymentBean implements Serializable {
         loadApprovedBookings();
     }
 
+    /**
+     * Loads only APPROVED bookings that do NOT yet have a VERIFIED payment.
+     * Bookings already paid are excluded — no duplicate payment allowed.
+     */
     private void loadApprovedBookings() {
         User user = getLoggedInUser();
         if (user != null) {
             approvedBookings = bookingService.getBookingsByStatus(BookingStatus.APPROVED)
                 .stream()
                 .filter(b -> b.getStudent().getId().equals(user.getId()))
+                .filter(b -> !isPaymentVerifiedForBooking(b.getId()))   // exclude already-paid
                 .toList();
         }
     }
@@ -56,7 +61,6 @@ public class PaymentBean implements Serializable {
             this.currentPayment = payment;
 
             if (payment.getStatus() == PaymentStatus.VERIFIED) {
-                // Already verified — inform user, no need to verify again
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Payment Already Verified",
@@ -71,22 +75,15 @@ public class PaymentBean implements Serializable {
             }
             PrimeFaces.current().ajax().addCallbackParam("initiated", true);
         } catch (Exception e) {
-            // Extract the root cause message from EJBException if needed
             String msg = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             addError(msg != null ? msg : "An error occurred. Please try again.");
             PrimeFaces.current().ajax().addCallbackParam("initiated", false);
         }
     }
 
-    /**
-     * Calls PaymentWebServiceImpl.verifyPayment() via PaymentService,
-     * then refreshes currentPayment so the UI reflects the new status.
-     */
     public void verifyPayment(Long paymentId) {
         try {
             Payment result = paymentService.processAndVerifyPayment(paymentId);
-
-            // Update currentPayment so the UI reflects the new status immediately
             this.currentPayment = result;
 
             if (result.getStatus() == PaymentStatus.VERIFIED) {
@@ -96,8 +93,7 @@ public class PaymentBean implements Serializable {
                         "Your payment has been successfully verified via the Payment Web Service. "
                         + "Transaction ID: " + result.getTransactionId()));
                 PrimeFaces.current().ajax().addCallbackParam("verifySuccess", true);
-                // Refresh approved bookings — paid booking may no longer need payment
-                loadApprovedBookings();
+                loadApprovedBookings(); // refresh — paid booking removed from list
             } else {
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -108,6 +104,28 @@ public class PaymentBean implements Serializable {
         } catch (Exception e) {
             addError("Verification error: " + e.getMessage());
             PrimeFaces.current().ajax().addCallbackParam("verifySuccess", false);
+        }
+    }
+
+    /** Used by dashboard and my-bookings to determine action column display */
+    public boolean isPaymentVerifiedForBooking(Long bookingId) {
+        Optional<Payment> p = paymentService.getPaymentByBooking(bookingId);
+        return p.isPresent() && p.get().getStatus() == PaymentStatus.VERIFIED;
+    }
+
+    /** Returns a display label for the booking action based on booking + payment state */
+    public String getBookingActionLabel(Long bookingId, String bookingStatus) {
+        switch (bookingStatus) {
+            case "PENDING":     return "PENDING_APPROVAL";
+            case "APPROVED":
+                return isPaymentVerifiedForBooking(bookingId)
+                    ? "PAYMENT_DONE"   // paid — wait for check-in
+                    : "MAKE_PAYMENT";  // not yet paid
+            case "CHECKED_IN":  return "CHECKED_IN";
+            case "CHECKED_OUT": return "CHECKED_OUT";
+            case "REJECTED":    return "REJECTED";
+            case "CANCELLED":   return "CANCELLED";
+            default:            return "NONE";
         }
     }
 

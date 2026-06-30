@@ -23,39 +23,94 @@
                 <p:dataTable id="bookingTable" value="#{bookingBean.myBookings}" var="b"
                              rows="10" paginator="true"
                              emptyMessage="You have no bookings yet. Browse rooms to make a booking.">
+
                     <p:column headerText="#" style="width:50px">
                         <h:outputText value="#{b.id}"/>
                     </p:column>
+
                     <p:column headerText="Room">
                         <h:outputText value="Room #{b.room.roomNumber} (#{b.room.type})"/>
                     </p:column>
+
                     <p:column headerText="Block">
                         <h:outputText value="Block #{b.room.block}"/>
                     </p:column>
+
                     <p:column headerText="Price/Semester">
                         <h:outputText value="RM #{b.room.pricePerSemester}"/>
                     </p:column>
+
                     <p:column headerText="Booking Date">
                         <h:outputText value="#{b.bookingDate}">
                             <f:convertDateTime pattern="dd-MM-yyyy HH:mm" type="localDateTime"/>
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Status">
-                        <p:tag value="#{b.status}"
-                               styleClass="#{b.status == 'PENDING' ? 'badge badge-pending' : b.status == 'APPROVED' ? 'badge badge-booked' : b.status == 'CHECKED_IN' ? 'badge badge-checkedin' : b.status == 'REJECTED' ? 'badge badge-rejected' : b.status == 'CANCELLED' ? 'badge badge-cancelled' : 'badge badge-info'}"/>
+
+                    <p:column headerText="Booking Status">
+                        <p:tag value="#{b.status.name()}"
+                               styleClass="#{b.status.name() == 'PENDING' ? 'badge badge-pending' :
+                                            b.status.name() == 'APPROVED' ? 'badge badge-booked' :
+                                            b.status.name() == 'CHECKED_IN' ? 'badge badge-checkedin' :
+                                            b.status.name() == 'REJECTED' ? 'badge badge-rejected' :
+                                            b.status.name() == 'CANCELLED' ? 'badge badge-cancelled' :
+                                            'badge badge-info'}"/>
                     </p:column>
-                    <p:column headerText="Payment">
-                        <h:outputText value="#{paymentBean.getPaymentForBooking(b.id).isPresent() ?
-                                              paymentBean.getPaymentForBooking(b.id).get().status : 'N/A'}"/>
+
+                    <p:column headerText="Payment Status">
+                        <!-- VERIFIED -->
+                        <p:tag value="VERIFIED" severity="success" icon="fas fa-check-circle"
+                               rendered="#{paymentBean.isPaymentVerifiedForBooking(b.id)}"/>
+                        <!-- PENDING / FAILED -->
+                        <h:panelGroup rendered="#{!paymentBean.isPaymentVerifiedForBooking(b.id) and
+                                                   paymentBean.getPaymentForBooking(b.id).isPresent()}">
+                            <p:tag value="#{paymentBean.getPaymentForBooking(b.id).get().status.name()}"
+                                   severity="warning"/>
+                        </h:panelGroup>
+                        <!-- NOT PAID -->
+                        <h:outputText value="NOT PAID"
+                                      style="color:#dc2626; font-size:0.8rem; font-weight:600"
+                                      rendered="#{!paymentBean.isPaymentVerifiedForBooking(b.id) and
+                                                  !paymentBean.getPaymentForBooking(b.id).isPresent()}"/>
                     </p:column>
-                    <p:column headerText="Actions">
+
+                    <p:column headerText="Action">
+                        <!-- Cancel: only for PENDING bookings -->
                         <p:commandButton value="Cancel" icon="fas fa-times"
                                          styleClass="p-button-danger p-button-sm"
-                                         rendered="#{b.status == 'PENDING'}"
+                                         rendered="#{b.status.name() == 'PENDING'}"
                                          action="#{bookingBean.cancelBooking(b.id)}"
                                          update="bookingForm"
                                          onclick="return confirm('Cancel this booking?')"/>
-                        <h:outputText value="—" rendered="#{b.status != 'PENDING'}"/>
+
+                        <!-- Make Payment: APPROVED + NOT paid -->
+                        <p:button value="Make Payment" icon="fas fa-credit-card"
+                                  styleClass="p-button-sm"
+                                  outcome="/student/payment"
+                                  rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'MAKE_PAYMENT'}"/>
+
+                        <!-- Payment Done — waiting for staff check-in -->
+                        <h:panelGroup rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'PAYMENT_DONE'}">
+                            <span style="color:#16a34a; font-weight:600; font-size:0.8rem">
+                                <i class="fas fa-check-circle"></i>
+                                Payment Done. Wait for Check-in.
+                            </span>
+                        </h:panelGroup>
+
+                        <!-- Checked In -->
+                        <h:panelGroup rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'CHECKED_IN'}">
+                            <span style="color:#2563eb; font-weight:600; font-size:0.8rem">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Checked In
+                            </span>
+                        </h:panelGroup>
+
+                        <!-- Checked Out -->
+                        <h:panelGroup rendered="#{paymentBean.getBookingActionLabel(b.id, b.status.name()) == 'CHECKED_OUT'}">
+                            <span style="color:#64748b; font-size:0.8rem">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Checked Out
+                            </span>
+                        </h:panelGroup>
                     </p:column>
                 </p:dataTable>
             </p:panel>

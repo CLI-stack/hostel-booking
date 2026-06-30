@@ -15,7 +15,7 @@
                 <!-- Step 1: Select Booking -->
                 <p:panel header="Step 1: Select Approved Booking" styleClass="step-panel">
                     <p:dataTable value="#{paymentBean.approvedBookings}" var="b"
-                                 emptyMessage="No approved bookings pending payment.">
+                                 emptyMessage="No approved bookings pending payment. If your payment is already verified, you are waiting for staff check-in.">
                         <p:column headerText="Room">
                             <h:outputText value="Room #{b.room.roomNumber} (#{b.room.type})"/>
                         </p:column>
