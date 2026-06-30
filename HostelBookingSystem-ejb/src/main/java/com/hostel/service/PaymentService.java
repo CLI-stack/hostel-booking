@@ -29,20 +29,28 @@ public class PaymentService {
             .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
         if (booking.getStatus() != BookingStatus.APPROVED) {
-            throw new IllegalStateException("Payment can only be made for approved bookings.");
+            throw new IllegalArgumentException(
+                "Payment can only be made for approved bookings. Current status: "
+                + booking.getStatus().name());
         }
 
         Optional<Payment> existing = paymentDAO.findByBooking(bookingId);
+
+        // If payment is already VERIFIED, return it as-is so the UI can display it.
+        // Throwing here causes an EJB system exception that bypasses the catch block.
         if (existing.isPresent() && existing.get().getStatus() == PaymentStatus.VERIFIED) {
-            throw new IllegalStateException("Payment already verified for this booking.");
+            LOG.info("Payment already verified for booking " + bookingId + " — returning existing.");
+            return existing.get();
         }
 
+        // Re-use or create payment record
         Payment payment = existing.orElse(new Payment());
         payment.setBooking(booking);
         payment.setAmount(booking.getRoom().getPricePerSemester());
         payment.setPaymentMethod(paymentMethod);
         payment.setPaymentDate(LocalDateTime.now());
         payment.setStatus(PaymentStatus.PENDING);
+        // Generate a new transaction ID each initiation attempt
         payment.setTransactionId(UUID.randomUUID().toString().replace("-", "").toUpperCase());
 
         return existing.isPresent() ? paymentDAO.update(payment) : paymentDAO.save(payment);
@@ -82,7 +90,7 @@ public class PaymentService {
             .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
 
         if (payment.getStatus() != PaymentStatus.VERIFIED) {
-            throw new IllegalStateException("Only verified payments can be refunded.");
+            throw new IllegalArgumentException("Only verified payments can be refunded.");
         }
 
         payment.setStatus(PaymentStatus.REFUNDED);

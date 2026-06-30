@@ -54,14 +54,26 @@ public class PaymentBean implements Serializable {
         try {
             Payment payment = paymentService.initiatePayment(selectedBookingId, paymentMethod);
             this.currentPayment = payment;
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "Payment Initiated",
-                    "Transaction ID: " + payment.getTransactionId()
-                    + ". Click \"Verify Payment\" to complete."));
+
+            if (payment.getStatus() == PaymentStatus.VERIFIED) {
+                // Already verified — inform user, no need to verify again
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Payment Already Verified",
+                        "This booking has already been paid. Transaction ID: "
+                        + payment.getTransactionId()));
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Payment Initiated",
+                        "Transaction ID: " + payment.getTransactionId()
+                        + ". Click \"Verify Payment\" to complete."));
+            }
             PrimeFaces.current().ajax().addCallbackParam("initiated", true);
         } catch (Exception e) {
-            addError(e.getMessage());
+            // Extract the root cause message from EJBException if needed
+            String msg = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            addError(msg != null ? msg : "An error occurred. Please try again.");
             PrimeFaces.current().ajax().addCallbackParam("initiated", false);
         }
     }

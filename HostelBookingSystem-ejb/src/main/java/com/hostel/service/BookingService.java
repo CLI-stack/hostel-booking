@@ -25,11 +25,11 @@ public class BookingService {
     public Booking submitBooking(Long studentId, Long roomId) {
         // Constraint: only during active registration period
         RegistrationPeriod period = periodDAO.findActivePeriod()
-            .orElseThrow(() -> new IllegalStateException("Booking is not open. No active registration period."));
+            .orElseThrow(() -> new IllegalArgumentException("Booking is not open. No active registration period."));
 
         // Constraint: student can only have one active booking
         if (bookingDAO.studentHasActiveBooking(studentId)) {
-            throw new IllegalStateException("You already have an active booking. Cancel it before making a new one.");
+            throw new IllegalArgumentException("You already have an active booking. Cancel it before making a new one.");
         }
 
         User student = userDAO.findById(studentId)
@@ -40,11 +40,11 @@ public class BookingService {
 
         // Constraint: prevent duplicate room bookings
         if (bookingDAO.roomHasActiveBooking(roomId)) {
-            throw new IllegalStateException("Room " + room.getRoomNumber() + " is already booked.");
+            throw new IllegalArgumentException("Room " + room.getRoomNumber() + " is already booked.");
         }
 
         if (room.getStatus() != RoomStatus.AVAILABLE) {
-            throw new IllegalStateException("Room " + room.getRoomNumber() + " is not available.");
+            throw new IllegalArgumentException("Room " + room.getRoomNumber() + " is not available.");
         }
 
         Booking booking = new Booking();
@@ -120,7 +120,7 @@ public class BookingService {
             throw new SecurityException("You can only cancel your own bookings.");
         }
         if (booking.getStatus() == BookingStatus.CHECKED_IN) {
-            throw new IllegalStateException("Cannot cancel a booking after check-in.");
+            throw new IllegalArgumentException("Cannot cancel a booking after check-in.");
         }
 
         booking.setStatus(BookingStatus.CANCELLED);

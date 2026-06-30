@@ -30,7 +30,7 @@ public class CheckInOutService {
             .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
         if (booking.getStatus() != BookingStatus.APPROVED) {
-            throw new IllegalStateException("Only approved bookings can be checked in.");
+            throw new IllegalArgumentException("Only approved bookings can be checked in.");
         }
 
         User staff = userDAO.findById(staffId)
@@ -61,7 +61,7 @@ public class CheckInOutService {
             .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
         if (booking.getStatus() != BookingStatus.CHECKED_IN) {
-            throw new IllegalStateException("Only checked-in bookings can be checked out.");
+            throw new IllegalArgumentException("Only checked-in bookings can be checked out.");
         }
 
         User staff = userDAO.findById(staffId)
