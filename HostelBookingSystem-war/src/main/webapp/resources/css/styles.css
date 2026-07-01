@@ -413,8 +413,8 @@ body {
     margin-bottom: 20px;
 }
 
-.welcome-panel h3 { font-size: 1.3rem; margin-bottom: 4px; }
-.welcome-panel p  { opacity: 0.85; }
+.welcome-panel h3 { font-size: 1.3rem; margin-bottom: 4px; color: #000000 !important; }
+.welcome-panel p  { opacity: 1; color: #000000 !important;}
 .welcome-panel .ui-panel-content { color: #fff !important; }
 
 /* ---- Room Cards ---- */
