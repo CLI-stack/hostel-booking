@@ -19,6 +19,7 @@ import org.primefaces.PrimeFaces;
 @Named
 @ViewScoped
 public class BookingBean implements Serializable {
+  
 
     @Inject private BookingService bookingService;
     @Inject private RegistrationPeriodService periodService;
@@ -39,17 +40,24 @@ public class BookingBean implements Serializable {
         }
         registrationOpen = periodService.isRegistrationOpen();
     }
+  
 
     public void submitBooking() {
+           System.out.println("###### SUBMITBOOKING DEBUG VERSION 99 RUNNING ######");
         User user = getLoggedInUser();
         if (user == null) return;
 
-        // Check for existing APPROVED booking before calling the service
-        boolean hasApproved = myBookings != null && myBookings.stream()
-            .anyMatch(b -> b.getStatus() == BookingStatus.APPROVED);
+        // Refresh booking status before checking — avoid stale @ViewScoped data
+        // (e.g. staff may have checked the student in since this view was created)
+        myBookings = bookingService.getStudentBookings(user.getId());
 
-        if (hasApproved) {
-            // Tell the UI to show the "already has approved booking" popup
+        // Check for existing APPROVED or CHECKED_IN booking before calling the service
+        boolean hasActive = myBookings != null && myBookings.stream()
+            .anyMatch(b -> b.getStatus() == BookingStatus.APPROVED
+                        || b.getStatus() == BookingStatus.CHECKED_IN);
+
+        if (hasActive) {
+            // Tell the UI to show the "already has active/checked-in booking" popup
             PrimeFaces.current().ajax().addCallbackParam("bookingResult", "ALREADY_APPROVED");
             return;
         }
@@ -61,19 +69,31 @@ public class BookingBean implements Serializable {
             // Single success callback — XHTML decides which popup to show
             PrimeFaces.current().ajax().addCallbackParam("bookingResult", "SUCCESS");
             PrimeFaces.current().ajax().addCallbackParam("roomNumber", lastBookedRoomNumber);
-        } catch (IllegalStateException e) {
-            String msg = e.getMessage();
-            if (msg != null && msg.contains("active booking")) {
-                PrimeFaces.current().ajax().addCallbackParam("bookingResult", "ALREADY_ACTIVE");
-            } else if (msg != null && msg.contains("not open")) {
-                PrimeFaces.current().ajax().addCallbackParam("bookingResult", "PERIOD_CLOSED");
-            } else {
-                PrimeFaces.current().ajax().addCallbackParam("bookingResult", "ERROR");
-                PrimeFaces.current().ajax().addCallbackParam("errorMsg", msg);
-            }
         } catch (Exception e) {
+            // Walk the full cause chain to find the real business exception message,
+            // since EJB containers wrap unchecked exceptions in EJBException (and
+            // sometimes other wrappers), hiding the original message.
+            Throwable t = e;
+            String msg = null;
+            while (t != null) {
+                if (t.getMessage() != null) {
+                    msg = t.getMessage();
+                }
+                t = t.getCause();
+            }
+            handleBookingError(msg);
+        }
+    }
+
+    private void handleBookingError(String msg) {
+        if (msg != null && msg.contains("active booking")) {
+            PrimeFaces.current().ajax().addCallbackParam("bookingResult", "ALREADY_ACTIVE");
+        } else if (msg != null && msg.contains("not open")) {
+            PrimeFaces.current().ajax().addCallbackParam("bookingResult", "PERIOD_CLOSED");
+        } else {
             PrimeFaces.current().ajax().addCallbackParam("bookingResult", "ERROR");
-            PrimeFaces.current().ajax().addCallbackParam("errorMsg", e.getMessage());
+            PrimeFaces.current().ajax().addCallbackParam("errorMsg",
+                msg != null ? msg : "An unexpected error occurred.");
         }
     }
 
@@ -94,7 +114,8 @@ public class BookingBean implements Serializable {
 
     public boolean hasApprovedBooking() {
         return myBookings != null && myBookings.stream()
-            .anyMatch(b -> b.getStatus() == BookingStatus.APPROVED);
+            .anyMatch(b -> b.getStatus() == BookingStatus.APPROVED
+                        || b.getStatus() == BookingStatus.CHECKED_IN);
     }
 
     private User getLoggedInUser() {

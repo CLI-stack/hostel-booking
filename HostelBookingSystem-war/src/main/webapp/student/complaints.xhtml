@@ -7,20 +7,28 @@
 <ui:composition template="/templates/layout.xhtml">
     <ui:define name="pageTitle">Complaints</ui:define>
     <ui:define name="content">
+
+        <style>
+            .ui-outputlabel-rfi {
+                color: #dc3545;
+                font-weight: bold;
+                margin-left: 2px;
+            }
+        </style>
+
         <h:form id="complaintForm">
             <p:messages id="msgs" showDetail="true" closable="true"/>
-
             <!-- Submit Complaint -->
             <p:panel header="Submit New Complaint">
                 <div class="field">
-                    <p:outputLabel for="subject" value="Subject *"/>
+                    <p:outputLabel for="subject" value="Subject"/>
                     <p:inputText id="subject" value="#{complaintBean.subject}"
                                  required="true" requiredMessage="Subject is required"
                                  styleClass="full-width" placeholder="Brief description of issue"/>
                     <p:message for="subject"/>
                 </div>
                 <div class="field">
-                    <p:outputLabel for="desc" value="Description *"/>
+                    <p:outputLabel for="desc" value="Description"/>
                     <p:inputTextarea id="desc" value="#{complaintBean.description}"
                                      required="true" requiredMessage="Description is required"
                                      rows="5" styleClass="full-width"
@@ -31,7 +39,6 @@
                                  action="#{complaintBean.submitComplaint}"
                                  update="complaintForm" process="@form"/>
             </p:panel>
-
             <!-- My Complaints -->
             <p:panel header="My Complaints" style="margin-top:20px">
                 <p:dataTable value="#{complaintBean.myComplaints}" var="c"

@@ -106,17 +106,19 @@
             </p:panel>
         </h:form>
 
-        <!-- Verification result dialog -->
-        <p:dialog id="verifyResultDialog" widgetVar="verifyResultDialog"
-                  header="Verification Result" modal="true" resizable="false" width="380">
-            <div id="verifyResultBody" style="text-align:center; padding:12px">
-                <!-- content set by JS -->
-            </div>
-            <p:commandButton value="OK" icon="fas fa-check"
-                             onclick="PF('verifyResultDialog').hide(); return false;"
-                             type="button" styleClass="p-button-success"
-                             style="margin-top:12px"/>
-        </p:dialog>
+      <!-- Verification result dialog -->
+<h:form id="verifyDialogForm">
+    <p:dialog id="verifyResultDialog" widgetVar="verifyResultDialog"
+              header="Verification Result" modal="true" resizable="false" width="380">
+        <div id="verifyResultBody" style="text-align:center; padding:12px">
+            <!-- content set by JS -->
+        </div>
+        <p:commandButton value="OK" icon="fas fa-check"
+                         onclick="PF('verifyResultDialog').hide(); return false;"
+                         type="button" styleClass="p-button-success"
+                         style="margin-top:12px"/>
+    </p:dialog>
+</h:form>
 
         <h:outputScript>
             function handleVerifyResult(args) {
