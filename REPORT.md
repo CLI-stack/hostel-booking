@@ -193,7 +193,7 @@ Reusable software components — including a user authentication module, booking
                                   │ JDBC
  ┌────────────────────────────────▼─────────────────────────────────────────┐
  │                           DATABASE TIER                                  │
- │                  H2 (Development) / MySQL (Production)                   │
+ │                          MySQL 8.x                                        │
  └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -232,7 +232,7 @@ Reusable software components — including a user authentication module, booking
  │  • HostelBookingSystem-ear-1.0.ear                                  │
  │    ├── HostelBookingSystem-ejb.jar   (67 KB)                        │
  │    ├── HostelBookingSystem-war.war   (4.2 MB)                       │
- │    └── lib/ (H2, jBCrypt)           (2.6 MB)                       │
+ │    └── lib/ (jBCrypt)               (2.6 MB)                       │
  └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -383,7 +383,7 @@ Reusable software components — including a user authentication module, booking
  └────────────────────────────────────────────────────┼──────────────────┘
                                                       │ JPA 3.1 / JDBC
                                              ┌────────▼──────────┐
-                                             │  H2 / MySQL DB    │
+                                             │   MySQL 8.x DB    │
                                              └───────────────────┘
 ```
 
@@ -412,13 +412,13 @@ Reusable software components — including a user authentication module, booking
  │  │  │ CDI 4.0 Beans      │  │ JAX-WS PaymentWebService     │ │  │
  │  │  │ Servlet 6.0 Filter │  │ @Singleton DataInitializer   │ │  │
  │  │  └────────────────────┘  └──────────────────────────────┘ │  │
- │  │  lib/ H2-2.2.224.jar, jbcrypt-0.4.jar                     │  │
+ │  │  lib/ jbcrypt-0.4.jar                                      │  │
  │  └────────────────────────────────────────────────────────────┘  │
  └─────────────────────────────┬────────────────────────────────────┘
                                │ JDBC
  ┌─────────────────────────────▼────────────────────────────────────┐
  │              Database Server Node                                │
- │         H2 (Embedded/Dev) / MySQL 8.x (Production)              │
+ │                    MySQL 8.x                                    │
  │   Tables: users, rooms, bookings, payments,                     │
  │           complaints, maintenance_requests,                     │
  │           check_in_out, notifications,                          │
@@ -557,7 +557,7 @@ Reusable software components — including a user authentication module, booking
 | **Type** | Singleton EJB (`@Singleton @Startup`) |
 | **Module** | HostelBookingSystem-ejb |
 | **Package** | `com.hostel.util` |
-| **Purpose** | Implements the **Singleton pattern**. Runs exactly once when GlassFish deploys the EAR. Defines the H2 JDBC datasource via `@DataSourceDefinition` (Jakarta EE 10). Seeds demo users, 10 rooms across two blocks, and an active registration period. |
+| **Purpose** | Implements the **Singleton pattern**. Runs exactly once when GlassFish deploys the EAR. Seeds demo users, 10 rooms across two blocks, and an active registration period. |
 | **Key Methods** | `init()` → `void` (via `@PostConstruct`) |
 | **Dependencies** | `UserDAO`, `RoomDAO`, `RegistrationPeriodDAO`, `PasswordUtil` |
 
@@ -617,7 +617,7 @@ Reusable software components — including a user authentication module, booking
 | Library | Version | Purpose | Source / Link | Alternative |
 |---------|---------|---------|---------------|-------------|
 | **PrimeFaces** | 14.0.0 (jakarta) | Rich UI component library for Jakarta Faces 4.0: `p:dataTable`, `p:dialog`, `p:tag`, `p:commandButton`, `p:panelMenu`, `p:datePicker`, etc. | [https://www.primefaces.org](https://www.primefaces.org) | OmniFaces, RichFaces |
-| **H2 Database** | 2.2.224 | Embedded in-memory/file SQL database for development. Defined via `@DataSourceDefinition` in `DataInitializer` | [https://www.h2database.com](https://www.h2database.com) | MySQL, PostgreSQL |
+| **MySQL Connector/J** | 9.7.0 | JDBC driver for MySQL 8+ database connectivity | [https://dev.mysql.com/downloads/connector/j](https://dev.mysql.com/downloads/connector/j/) | MariaDB Connector |
 | **jBCrypt** | 0.4 | BCrypt password hashing — `PasswordUtil.hash()` and `PasswordUtil.verify()` | [https://www.mindrot.org/projects/jBCrypt](https://www.mindrot.org/projects/jBCrypt) | Spring Security Crypto |
 
 ---
