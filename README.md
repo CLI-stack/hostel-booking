@@ -25,7 +25,7 @@ The system is built using the **Jakarta EE 10 Framework** and applies **Componen
 | Dependency Injection | CDI (Jakarta Contexts & DI) | 4.0 |
 | Bean Validation | Jakarta Bean Validation | 3.0 |
 | Servlet | Jakarta Servlet | 6.0 |
-| Database | H2 (embedded) | 2.2.224 |
+| Database | MySQL | 8.x |
 | Password Hashing | BCrypt (jbcrypt) | 0.4 |
 | Build Tool | Apache Maven | 3.9.6 |
 | Package Namespace | Jakarta EE 10 | `jakarta.*` |
@@ -50,7 +50,7 @@ HostelBookingSystem/                          ← Parent POM (packaging: pom)
 │       │   ├── ws/                           ← JAX-WS Payment Web Service
 │       │   └── util/                         ← PasswordUtil, DataInitializer
 │       └── resources/META-INF/
-│           └── persistence.xml               ← JPA config (JPA 3.1, H2)
+│           └── persistence.xml               ← JPA config (JPA 3.1, MySQL)
 │
 ├── HostelBookingSystem-war/                  ← WAR Module (packaging: war)
 │   ├── pom.xml
@@ -101,7 +101,7 @@ HostelBookingSystem/                          ← Parent POM (packaging: pom)
         |
         | JDBC
         v
-[Database — H2 (Dev) / MySQL (Production)]
+[Database — MySQL 8.x]
 ```
 
 ### Development View — Layered Architecture
@@ -121,7 +121,7 @@ HostelBookingSystem/                          ← Parent POM (packaging: pom)
 │  @Stateless EJB DAOs + JPQL Named Queries                │
 ├──────────────────────────────────────────────────────────┤
 │  DATA LAYER  [HostelBookingSystem-ejb]                   │
-│  JPA 3.1 Entities + EclipseLink + H2 / MySQL            │
+│  JPA 3.1 Entities + EclipseLink + MySQL                  │
 └──────────────────────────────────────────────────────────┘
          ↕ packaged together in ↕
 ┌──────────────────────────────────────────────────────────┐
@@ -129,7 +129,7 @@ HostelBookingSystem/                          ← Parent POM (packaging: pom)
 │  HostelBookingSystem.ear                                 │
 │  → HostelBookingSystem-ejb.jar                          │
 │  → HostelBookingSystem-war.war                          │
-│  → lib/ (H2, jBCrypt)                                   │
+│  → lib/ (jBCrypt)                                       │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -244,7 +244,7 @@ url       = "jdbc:mysql://localhost:3306/hosteldb",
 user      = "root",
 password  = "yourpassword"
 ```
-2. Update `persistence.xml` — remove H2Platform property.
+2. Verify `persistence.xml` targets `MySQLPlatform`.
 3. Add MySQL JDBC driver JAR to `GlassFish/domain1/lib/`.
 
 ---
@@ -344,7 +344,7 @@ Built with: JDK 18 + Maven 3.9.6
 | Library | Version | Purpose | Source / Link | Alternative |
 |---------|---------|---------|--------------|-------------|
 | **PrimeFaces** | 14.0.0 (jakarta) | Rich UI — `p:dataTable`, `p:dialog`, `p:password` (toggleMask), `p:growl`, `p:ajaxStatus`, `p:tag` | [primefaces.org](https://www.primefaces.org) | OmniFaces, RichFaces |
-| **MySQL Connector/J** | 9.7.0 | JDBC driver for MySQL 8+ database connectivity | [dev.mysql.com/downloads/connector/j](https://dev.mysql.com/downloads/connector/j/) | MariaDB Connector, H2 (dev) |
+| **MySQL Connector/J** | 9.7.0 | JDBC driver for MySQL 8+ database connectivity | [dev.mysql.com/downloads/connector/j](https://dev.mysql.com/downloads/connector/j/) | MariaDB Connector |
 | **jBCrypt** | 0.4 | BCrypt password hashing — `PasswordUtil.hash()` and `PasswordUtil.verify()` | [mindrot.org/projects/jBCrypt](https://www.mindrot.org/projects/jBCrypt/) | Spring Security Crypto, Argon2 |
 | **Font Awesome** | 6.4.0 | Icon library for all UI icons (CDN) | [fontawesome.com](https://fontawesome.com) | Material Icons, Feather Icons |
 
