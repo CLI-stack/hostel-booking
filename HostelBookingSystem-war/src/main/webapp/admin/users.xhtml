@@ -15,7 +15,7 @@
             <p:panel header="Create New User Account" toggleable="true">
                 <p:panelGrid columns="2" styleClass="form-grid">
 
-                    <p:outputLabel for="roleSelect" value="Role *"/>
+                    <p:outputLabel for="roleSelect" value="Role " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:selectOneMenu id="roleSelect"
                                      value="#{adminCreateUserBean.selectedRole}"
                                      required="true" style="width:220px">
@@ -31,19 +31,19 @@
                         <small>Admin:   #{adminCreateUserBean.adminDomain}</small>
                     </div>
 
-                    <p:outputLabel for="uFullName" value="Full Name *"/>
+                    <p:outputLabel for="uFullName" value="Full Name " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="uFullName"
                                  value="#{adminCreateUserBean.fullName}"
                                  required="true" styleClass="full-width"
                                  placeholder="Full name"/>
 
-                    <p:outputLabel for="uEmail" value="Email *"/>
+                    <p:outputLabel for="uEmail" value="Email " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="uEmail"
                                  value="#{adminCreateUserBean.email}"
                                  required="true" styleClass="full-width"
                                  placeholder="Must match role domain above"/>
 
-                    <p:outputLabel for="uUsername" value="Username *"/>
+                    <p:outputLabel for="uUsername" value="Username " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="uUsername"
                                  value="#{adminCreateUserBean.username}"
                                  required="true" styleClass="full-width"
@@ -59,13 +59,13 @@
                                  value="#{adminCreateUserBean.matricNumber}"
                                  styleClass="full-width" placeholder="Students only"/>
 
-                    <p:outputLabel for="uPwd" value="Password *"/>
+                    <p:outputLabel for="uPwd" value="Password " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:password id="uPwd"
                                 value="#{adminCreateUserBean.password}"
                                 required="true" toggleMask="true" feedback="true"
                                 styleClass="full-width" placeholder="Min 6 characters"/>
 
-                    <p:outputLabel for="uConfirmPwd" value="Confirm Password *"/>
+                    <p:outputLabel for="uConfirmPwd" value="Confirm Password " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:password id="uConfirmPwd"
                                 value="#{adminCreateUserBean.confirmPassword}"
                                 required="true" toggleMask="true" feedback="false"

@@ -13,7 +13,7 @@
             <!-- Log New Request -->
             <p:panel header="Log New Maintenance Request">
                 <div class="field">
-                    <p:outputLabel for="room" value="Select Room *"/>
+                    <p:outputLabel for="room" value="Select Room " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:selectOneMenu id="room" value="#{maintenanceBean.selectedRoomId}"
                                      required="true" style="width:200px">
                         <f:selectItem itemLabel="-- Select Room --" itemValue=""/>
@@ -24,7 +24,7 @@
                     <p:message for="room"/>
                 </div>
                 <div class="field">
-                    <p:outputLabel for="cat" value="Category *"/>
+                    <p:outputLabel for="cat" value="Category " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:selectOneMenu id="cat" value="#{maintenanceBean.category}"
                                      required="true" style="width:200px">
                         <f:selectItem itemLabel="-- Select Category --" itemValue=""/>
@@ -36,7 +36,7 @@
                     </p:selectOneMenu>
                 </div>
                 <div class="field">
-                    <p:outputLabel for="issue" value="Issue Description *"/>
+                    <p:outputLabel for="issue" value="Issue Description " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputTextarea id="issue" value="#{maintenanceBean.issueDescription}"
                                      required="true" rows="4" styleClass="full-width"
                                      placeholder="Describe the issue in detail"/>

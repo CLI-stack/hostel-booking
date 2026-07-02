@@ -23,7 +23,7 @@
             <!-- Create New Period -->
             <p:panel header="Create New Registration Period" style="margin-top:20px" toggleable="true">
                 <p:panelGrid columns="2" styleClass="form-grid">
-                    <p:outputLabel for="name" value="Period Name *"/>
+                    <p:outputLabel for="name" value="Period Name " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:inputText id="name" value="#{adminRegistrationPeriodBean.newPeriod.name}"
                                  required="true" placeholder="e.g. Semester 2 2025/2026"/>
 
@@ -35,11 +35,11 @@
                     <p:inputText id="yr" value="#{adminRegistrationPeriodBean.newPeriod.academicYear}"
                                  placeholder="e.g. 2025/2026"/>
 
-                    <p:outputLabel for="start" value="Start Date *"/>
+                    <p:outputLabel for="start" value="Start Date " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:datePicker id="start" value="#{adminRegistrationPeriodBean.newPeriod.startDate}"
                                   required="true" pattern="dd/MM/yyyy"/>
 
-                    <p:outputLabel for="end" value="End Date *"/>
+                    <p:outputLabel for="end" value="End Date " indicateRequired="false"><span class="required-asterisk">*</span></p:outputLabel>
                     <p:datePicker id="end" value="#{adminRegistrationPeriodBean.newPeriod.endDate}"
                                   required="true" pattern="dd/MM/yyyy"/>
                 </p:panelGrid>
